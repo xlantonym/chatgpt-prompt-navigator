@@ -761,6 +761,21 @@
     autoCollapseRestoreAt: null
   };
 
+  function createDefaultBackfillState() {
+    return {
+      status: "idle",
+      runId: null,
+      cancelRequested: false,
+      startedAt: null,
+      finishedAt: null,
+      lastError: null,
+      batchCount: 0,
+      scannedVisibleCount: 0,
+      registryCount: 0,
+      direction: "up"
+    };
+  }
+
   const state = {
     panel: null,
     navList: null,
@@ -854,9 +869,46 @@
     messageRegistryByConversation: new Map(),
     messageRegistry: new Map(),
     messageOrder: [],
+    backfill: createDefaultBackfillState(),
     lastMediaHydrationLogAt: 0,
     searchResultActiveIndex: -1
   };
+
+  function resetBackfillState(reason) {
+    state.backfill = createDefaultBackfillState();
+    state.backfill.registryCount = state.messageRegistry ? state.messageRegistry.size : 0;
+    debugLog("info", "backfill state reset", { reason: reason || "reset" });
+    scheduleDebugPanelRefresh(true);
+    return state.backfill;
+  }
+
+  function setBackfillStatus(status, patch = {}) {
+    state.backfill = {
+      ...createDefaultBackfillState(),
+      ...(state.backfill || {}),
+      ...patch,
+      status: status || (state.backfill && state.backfill.status) || "idle",
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0
+    };
+    scheduleDebugPanelRefresh(true);
+    return state.backfill;
+  }
+
+  function getBackfillProgressSnapshot() {
+    const backfill = state.backfill || createDefaultBackfillState();
+    return {
+      status: backfill.status || "idle",
+      runId: backfill.runId || null,
+      cancelRequested: !!backfill.cancelRequested,
+      startedAt: backfill.startedAt || null,
+      finishedAt: backfill.finishedAt || null,
+      lastError: backfill.lastError || null,
+      batchCount: Number(backfill.batchCount || 0),
+      scannedVisibleCount: Number(backfill.scannedVisibleCount || 0),
+      registryCount: state.messageRegistry ? state.messageRegistry.size : Number(backfill.registryCount || 0),
+      direction: backfill.direction || "up"
+    };
+  }
 
   function t(key, params) {
     const lang = state.preferences && state.preferences.uiLanguage === "en" ? "en" : "zh";
@@ -8017,6 +8069,7 @@
         orderStable: DEBUG_STATE.registryOrderStable,
         cachedMessageClickMissingDomCount: DEBUG_STATE.cachedMessageClickMissingDomCount
       },
+      backfillSummary: getBackfillProgressSnapshot(),
       conversationSwitchSummary: {
         switchCount: DEBUG_STATE.conversationSwitchCount,
         lastConversationId: DEBUG_STATE.lastConversationId,
