@@ -18,3 +18,6 @@ notes/private/
 node_modules/
 dist/*.map
 
+# Local audit / development notes
+docs/DEVELOPMENT_REVIEW.md
+docs/FINAL_AUDIT.md
