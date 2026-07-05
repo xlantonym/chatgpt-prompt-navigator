@@ -1,0 +1,20 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Local-only artifacts
+outputs/
+notes/private/
+
+# Package/build artifacts are not used by this MVP, but keep common noise out.
+node_modules/
+dist/*.map
+
