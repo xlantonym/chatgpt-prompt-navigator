@@ -22,6 +22,7 @@
   const MUTATION_DEBOUNCE_MS = 800;
   const MUTATION_LOG_INTERVAL_MS = 3000;
   const DEBUG_PANEL_REFRESH_MS = 1000;
+  const BACKFILL_ENABLE_WHEEL_FALLBACK = false;
   const HIGHLIGHT_HOLD_MS = 1200;
   const HIGHLIGHT_FADE_MS = 600;
   const HIGHLIGHT_MS = HIGHLIGHT_HOLD_MS + HIGHLIGHT_FADE_MS;
@@ -772,7 +773,153 @@
       batchCount: 0,
       scannedVisibleCount: 0,
       registryCount: 0,
-      direction: "up"
+      direction: "up",
+      scrollTargetDescriptor: null,
+      scrollTopBefore: null,
+      scrollTopAfter: null,
+      scrollDelta: null,
+      scrollHeight: null,
+      clientHeight: null,
+      windowScrollYBefore: null,
+      windowScrollYAfter: null,
+      lastStopReason: null,
+      lastBatchStartedAt: null,
+      lastBatchFinishedAt: null,
+      lastScrollAttemptAt: null,
+      lastScrollWorked: false,
+      scrollMethod: null,
+      anchorMessageIdBefore: null,
+      anchorMessageIdAfter: null,
+      anchorTopBefore: null,
+      anchorTopAfter: null,
+      anchorBottomBefore: null,
+      anchorBottomAfter: null,
+      anchorDelta: null,
+      firstVisibleDomMessageIdBefore: null,
+      firstVisibleDomMessageIdAfter: null,
+      firstRegistryMessageIdAtBackfill: null,
+      anchorScrollAttempted: false,
+      anchorScrollWorked: false,
+      anchorCandidateCount: 0,
+      anchorCandidateTriedCount: 0,
+      anchorCandidateIds: [],
+      anchorTriedIds: [],
+      anchorRawCandidateCount: 0,
+      anchorRankedCandidateCount: 0,
+      anchorRelaxedCandidateCount: 0,
+      anchorRawCandidateIds: [],
+      anchorRankedCandidateIds: [],
+      anchorRelaxedCandidateIds: [],
+      anchorRejectedCandidateCount: 0,
+      anchorRejectedReasons: [],
+      relaxedAnchorTriedCount: 0,
+      relaxedAnchorTriedIds: [],
+      relaxedAnchorWorkedId: null,
+      anchorAttemptHistory: [],
+      relaxedAnchorAttemptHistory: [],
+      anchorWorkedId: null,
+      anchorFailureReason: null,
+      anchorStrategy: null,
+      anchorRegistryIndexBefore: null,
+      anchorRegistryIndexAfter: null,
+      firstVisibleRegistryIndexBefore: null,
+      firstVisibleRegistryIndexAfter: null,
+      progressRoundCount: 0,
+      noProgressRoundCount: 0,
+      noProgressRoundLimit: 6,
+      lastProgressReason: null,
+      progressComparedToBest: false,
+      bestProgressUpdatedAt: null,
+      anchorMovedOnlyIgnoredAsProgress: false,
+      lastBestProgressReason: null,
+      bestFirstVisibleRegistryIndex: null,
+      bestRegistryCount: 0,
+      bestFirstVisibleDomMessageId: null,
+      bestVisibleDomUserMessageCount: 0,
+      viewportSignature: null,
+      recentViewportSignatures: [],
+      repeatedViewportSignatureCount: 0,
+      uniqueRecentViewportSignatureCount: 0,
+      oscillationDetected: false,
+      oscillationSignature: null,
+      oscillationPattern: null,
+      oscillationStopTriggeredAt: null,
+      roundsSinceBestProgress: 0,
+      topProbeCount: 0,
+      topProbeMax: 6,
+      topProbeActive: false,
+      anchorBlacklistedIds: [],
+      anchorReverseMovementCount: 0,
+      lastRejectedAnchorReason: null,
+      blacklistedRelaxedCandidateExcludedCount: 0,
+      blacklistedCandidateTriedCount: 0,
+      relaxedSkippedBlacklistedIds: [],
+      allCandidatesBlacklisted: false,
+      relaxedLaterCandidateExcludedCount: 0,
+      relaxedSkippedLaterCandidateIds: [],
+      relaxedMonotonicGuardEnabled: true,
+      relaxedRejectedByBestIndexCount: 0,
+      relaxedRejectedByCurrentIndexCount: 0,
+      visualAnchorMovedOnly: false,
+      visualMoveRejectedAsProgress: false,
+      anchorRejectedBecauseLaterThanBest: false,
+      anchorRejectedBecauseReverseAfterScroll: false,
+      anchorWorkedRequiresBestProgress: true,
+      reverseMovementDetected: false,
+      reverseMovementFromIndex: null,
+      reverseMovementToIndex: null,
+      reverseMovementAnchorId: null,
+      reverseMovementStoppedImmediately: false,
+      wheelFallbackAttempted: false,
+      wheelFallbackAttemptCount: 0,
+      wheelFallbackWorked: false,
+      wheelFallbackLastDeltaY: null,
+      wheelFallbackTargetDescriptor: null,
+      wheelFallbackEnabled: BACKFILL_ENABLE_WHEEL_FALLBACK,
+      wheelFallbackSkippedReason: BACKFILL_ENABLE_WHEEL_FALLBACK ? null : "disabled-for-stability",
+      pageUpFallbackAttempted: false,
+      pageUpFallbackWorked: false,
+      fallbackProgressReason: null,
+      wheelFallbackSignatureBefore: null,
+      wheelFallbackSignatureAfter: null,
+      topHydrationProbeAttempted: false,
+      topHydrationProbeCount: 0,
+      topHydrationProbeWorked: false,
+      topHydrationProbeReason: null,
+      topHydrationProbeRegistryCountBefore: null,
+      topHydrationProbeRegistryCountAfter: null,
+      topHydrationProbeFirstRegistryBefore: null,
+      topHydrationProbeFirstRegistryAfter: null,
+      topHydrationProbeFirstVisibleIndexBefore: null,
+      topHydrationProbeFirstVisibleIndexAfter: null,
+      visualScrollObservedButNoHydration: false,
+      scrollMetricTrustedAsSuccess: false,
+      userInterruptGuardEnabled: false,
+      userInterruptDetected: false,
+      userInterruptType: null,
+      userInterruptAt: null,
+      userInterruptCancelledBackfill: false,
+      backfillTraceEvents: [],
+      backfillHumanStatus: null,
+      hydrationAuditBefore: null,
+      hydrationAuditAfter: null,
+      hydrationAuditDelayed: null,
+      hydrationAuditDelayedRanAt: null,
+      hydrationAuditDelayedRegistryDelta: null,
+      hydrationAuditDelayedVisibleDomDelta: null,
+      hydrationDetected: false,
+      hydrationDetectionReason: null,
+      hydrationRegistryDelta: 0,
+      hydrationVisibleDomDelta: 0,
+      hydrationFirstRegistryChanged: false,
+      hydrationFirstVisibleIndexImproved: false,
+      hydrationDiscoveredNewEarlierMessage: false,
+      hydrationRevealedKnownCachedMessage: false,
+      hydrationOnlyVisualMovement: false,
+      rawAnchorFailureReason: null,
+      knownTopGapAtStop: null,
+      safeAnchorStalledKnownGap: false,
+      completionConfidence: null
     };
   }
 
@@ -870,11 +1017,269 @@
     messageRegistry: new Map(),
     messageOrder: [],
     backfill: createDefaultBackfillState(),
+    backfillInterruptCleanup: null,
     lastMediaHydrationLogAt: 0,
     searchResultActiveIndex: -1
   };
 
+  function appendBackfillTraceEvent(phase, action, details = {}) {
+    if (!state.backfill) return;
+    const trace = Array.isArray(state.backfill.backfillTraceEvents) ? state.backfill.backfillTraceEvents.slice(-79) : [];
+    trace.push({
+      time: new Date().toISOString(),
+      phase: phase || null,
+      action: action || null,
+      anchorId: details.anchorId || null,
+      beforeIndex: details.beforeIndex,
+      afterIndex: details.afterIndex,
+      bestIndex: state.backfill.bestFirstVisibleRegistryIndex,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : Number(state.backfill.registryCount || 0),
+      result: details.result || null,
+      reason: details.reason || null
+    });
+    state.backfill.backfillTraceEvents = trace;
+  }
+
+  function getBackfillHumanStatus(backfill = state.backfill) {
+    if (!backfill) return "Backfill idle.";
+    if (backfill.status === "running") {
+      if (backfill.topProbeActive || backfill.topHydrationProbeAttempted) return "Backfill is probing the loaded top for older hydrated messages.";
+      return "Backfill is scanning and trying safe upward hydration.";
+    }
+    if (backfill.status === "completed") {
+      if (backfill.lastError === "completed-known-start-stable") return "Stopped at the earliest known loaded message; no more safe hydration was observed.";
+      return "Backfill completed.";
+    }
+    if (backfill.status === "failed") {
+      if (backfill.lastError === "unsafe-reverse-anchor-prevented") return "Stopped: unsafe reverse anchor movement was detected.";
+      if (backfill.lastError === "safe-anchor-stalled-known-gap" || backfill.lastError === "known-top-gap-stalled") return "Stopped: there are still known messages above the viewport, but no safe anchor can move upward without reversing.";
+      if (backfill.lastError === "stalled-no-progress") return "Stopped: no older messages were hydrated after safe attempts.";
+      if (backfill.lastError === "oscillation-detected") return "Stopped: repeated viewport oscillation was detected.";
+      return "Backfill stopped with an error.";
+    }
+    if (backfill.status === "cancelled" || backfill.status === "cancelling") return "Backfill was cancelled.";
+    return "Backfill idle.";
+  }
+
+  function cleanupBackfillUserInterruptGuard() {
+    if (typeof state.backfillInterruptCleanup === "function") state.backfillInterruptCleanup();
+    state.backfillInterruptCleanup = null;
+    if (state.backfill) state.backfill.userInterruptGuardEnabled = false;
+  }
+
+  function setupBackfillUserInterruptGuard(runId) {
+    cleanupBackfillUserInterruptGuard();
+    const cancelForInterrupt = (event) => {
+      if (!state.backfill || state.backfill.runId !== runId || state.backfill.status !== "running") return;
+      if (Date.now() <= state.programmaticScrollUntil) return;
+      if (event && event.type === "mousedown" && state.panel && state.panel.contains(event.target)) return;
+      if (event && event.type === "keydown") {
+        const keys = new Set(["PageUp", "PageDown", "Home", "End", "ArrowUp", "ArrowDown", " "]);
+        if (!keys.has(event.key)) return;
+      }
+      setBackfillStatus("cancelling", {
+        cancelRequested: true,
+        lastError: "user-interrupt",
+        userInterruptDetected: true,
+        userInterruptType: event && event.type ? event.type : "unknown",
+        userInterruptAt: new Date().toISOString(),
+        userInterruptCancelledBackfill: true
+      });
+    };
+    window.addEventListener("wheel", cancelForInterrupt, true);
+    window.addEventListener("touchstart", cancelForInterrupt, true);
+    window.addEventListener("keydown", cancelForInterrupt, true);
+    window.addEventListener("mousedown", cancelForInterrupt, true);
+    state.backfillInterruptCleanup = () => {
+      window.removeEventListener("wheel", cancelForInterrupt, true);
+      window.removeEventListener("touchstart", cancelForInterrupt, true);
+      window.removeEventListener("keydown", cancelForInterrupt, true);
+      window.removeEventListener("mousedown", cancelForInterrupt, true);
+    };
+    setBackfillStatus(state.backfill.status || "running", {
+      userInterruptGuardEnabled: true
+    });
+  }
+
+  function getBackfillMessagePreviewById(messageId) {
+    if (!messageId || !state.messageRegistry) return null;
+    const message = state.messageRegistry.get(messageId);
+    if (!message) return null;
+    return getSingleLinePreview(message.mainText || message.text || message.preview || "", 80);
+  }
+
+  function getBackfillHydrationAuditSnapshot(label) {
+    const visibleNodes = getBackfillVisibleUserNodes();
+    const allNodes = Array.from(document.querySelectorAll(USER_SELECTOR));
+    const firstVisibleNode = visibleNodes[0] || allNodes[0] || null;
+    const firstVisibleDomMessageId = firstVisibleNode ? firstVisibleNode.getAttribute("data-message-id") || null : null;
+    const bestMessageId = state.backfill && state.backfill.bestFirstVisibleDomMessageId ? state.backfill.bestFirstVisibleDomMessageId : null;
+    const registryIds = Array.isArray(state.messageOrder) ? state.messageOrder.slice() : [];
+    const visibleDomIds = allNodes.map((node) => node.getAttribute("data-message-id")).filter(Boolean);
+    const firstVisibleDomRegistryIndex = getRegistryOrderIndex(firstVisibleDomMessageId);
+    const bestFirstVisibleRegistryIndex = state.backfill && typeof state.backfill.bestFirstVisibleRegistryIndex === "number" ?
+      state.backfill.bestFirstVisibleRegistryIndex : null;
+    const firstRegistryMessageId = registryIds[0] || null;
+    return {
+      label: label || null,
+      capturedAt: new Date().toISOString(),
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      visibleDomUserMessageCount: allNodes.length,
+      loadedFromStorageCount: Number(DEBUG_STATE.registryLoadedFromStorageCount || 0),
+      savedRegistryCount: registryIds.length,
+      firstRegistryMessageId,
+      firstRegistryPreview: getBackfillMessagePreviewById(firstRegistryMessageId),
+      firstVisibleDomMessageId,
+      firstVisibleDomRegistryIndex,
+      firstVisibleDomPreview: getBackfillMessagePreviewById(firstVisibleDomMessageId),
+      bestFirstVisibleRegistryIndex,
+      bestFirstVisibleDomMessageId: bestMessageId,
+      bestFirstVisiblePreview: getBackfillMessagePreviewById(bestMessageId),
+      knownTopGapFromFirstVisible: firstVisibleDomRegistryIndex >= 0 ? firstVisibleDomRegistryIndex : null,
+      knownTopGapFromBest: bestFirstVisibleRegistryIndex,
+      messageHash: state.messageHash || "",
+      visibleDomMessageIdsHead: visibleDomIds.slice(0, 8),
+      visibleDomMessageIdsTail: visibleDomIds.slice(-8),
+      registryMessageIdsHead: registryIds.slice(0, 8),
+      registryMessageIdsTail: registryIds.slice(-8)
+    };
+  }
+
+  function compareBackfillHydrationAudits(before, after) {
+    if (!before || !after) {
+      return {
+        hydrationDetected: false,
+        hydrationDetectionReason: "missing-audit",
+        hydrationRegistryDelta: 0,
+        hydrationVisibleDomDelta: 0,
+        hydrationFirstRegistryChanged: false,
+        hydrationFirstVisibleIndexImproved: false,
+        hydrationDiscoveredNewEarlierMessage: false,
+        hydrationRevealedKnownCachedMessage: false,
+        hydrationOnlyVisualMovement: false
+      };
+    }
+    const registryDelta = Number(after.registryCount || 0) - Number(before.registryCount || 0);
+    const visibleDomDelta = Number(after.visibleDomUserMessageCount || 0) - Number(before.visibleDomUserMessageCount || 0);
+    const firstRegistryChanged = !!(before.firstRegistryMessageId && after.firstRegistryMessageId && before.firstRegistryMessageId !== after.firstRegistryMessageId);
+    const beforeIndex = typeof before.firstVisibleDomRegistryIndex === "number" ? before.firstVisibleDomRegistryIndex : null;
+    const afterIndex = typeof after.firstVisibleDomRegistryIndex === "number" ? after.firstVisibleDomRegistryIndex : null;
+    const firstVisibleIndexImproved = beforeIndex != null && afterIndex != null && afterIndex >= 0 && afterIndex < beforeIndex;
+    const messageHashChanged = before.messageHash !== after.messageHash;
+    const reasons = [];
+    if (registryDelta > 0) reasons.push("registry-count-increased");
+    if (firstRegistryChanged) reasons.push("first-registry-changed");
+    if (firstVisibleIndexImproved) reasons.push("first-visible-index-improved");
+    const hydrationDetected = registryDelta > 0 || firstRegistryChanged || firstVisibleIndexImproved;
+    const hydrationRevealedKnownCachedMessage = visibleDomDelta > 0 && registryDelta <= 0;
+    if (hydrationRevealedKnownCachedMessage) reasons.push("visible-known-cache-expanded");
+    const hydrationOnlyVisualMovement = messageHashChanged && registryDelta <= 0 && !firstVisibleIndexImproved;
+    if (hydrationOnlyVisualMovement) reasons.push("message-hash-visual-only");
+    return {
+      hydrationDetected,
+      hydrationDetectionReason: reasons.join(",") || "no-hydration-detected",
+      hydrationRegistryDelta: registryDelta,
+      hydrationVisibleDomDelta: visibleDomDelta,
+      hydrationFirstRegistryChanged: firstRegistryChanged,
+      hydrationFirstVisibleIndexImproved: firstVisibleIndexImproved,
+      hydrationDiscoveredNewEarlierMessage: registryDelta > 0 || firstRegistryChanged,
+      hydrationRevealedKnownCachedMessage,
+      hydrationOnlyVisualMovement
+    };
+  }
+
+  function buildBackfillHydrationPatch(before, after, prefix) {
+    const result = compareBackfillHydrationAudits(before, after);
+    const patch = {
+      hydrationDetected: result.hydrationDetected,
+      hydrationDetectionReason: result.hydrationDetectionReason,
+      hydrationRegistryDelta: result.hydrationRegistryDelta,
+      hydrationVisibleDomDelta: result.hydrationVisibleDomDelta,
+      hydrationFirstRegistryChanged: result.hydrationFirstRegistryChanged,
+      hydrationFirstVisibleIndexImproved: result.hydrationFirstVisibleIndexImproved,
+      hydrationDiscoveredNewEarlierMessage: result.hydrationDiscoveredNewEarlierMessage,
+      hydrationRevealedKnownCachedMessage: result.hydrationRevealedKnownCachedMessage,
+      hydrationOnlyVisualMovement: result.hydrationOnlyVisualMovement
+    };
+    if (prefix === "delayed") {
+      patch.hydrationAuditDelayedRegistryDelta = result.hydrationRegistryDelta;
+      patch.hydrationAuditDelayedVisibleDomDelta = result.hydrationVisibleDomDelta;
+    }
+    return patch;
+  }
+
+  function isBackfillTerminalStatus(status) {
+    return status === "completed" || status === "failed" || status === "cancelled";
+  }
+
+  function applyBackfillKnownGapStopIfNeeded(next, originalPatch = {}) {
+    const rawReason = originalPatch.lastError || originalPatch.lastStopReason || next.lastError || next.lastStopReason;
+    const knownTopGap = typeof next.bestFirstVisibleRegistryIndex === "number" ? next.bestFirstVisibleRegistryIndex :
+      typeof next.firstVisibleRegistryIndexAfter === "number" ? next.firstVisibleRegistryIndexAfter :
+        typeof next.firstVisibleRegistryIndexBefore === "number" ? next.firstVisibleRegistryIndexBefore : null;
+    const safeAnchorStalled = rawReason === "no-relaxed-anchor-message" &&
+      knownTopGap != null &&
+      knownTopGap > 0 &&
+      Number(next.anchorRelaxedCandidateCount || 0) === 0 &&
+      Number(next.relaxedLaterCandidateExcludedCount || 0) > 0;
+    if (!safeAnchorStalled) return next;
+    return {
+      ...next,
+      lastError: "safe-anchor-stalled-known-gap",
+      lastStopReason: "safe-anchor-stalled-known-gap",
+      rawAnchorFailureReason: rawReason,
+      knownTopGapAtStop: knownTopGap,
+      safeAnchorStalledKnownGap: true,
+      completionConfidence: "safe-stalled-known-gap",
+      backfillHumanStatus: "Stopped: known earlier messages remain, but no safe upward anchor is available."
+    };
+  }
+
+  function captureBackfillTerminalHydrationAudit() {
+    if (!state.backfill || !state.backfill.runId) return;
+    if (state.backfill.hydrationAuditAfter) return;
+    const before = state.backfill.hydrationAuditBefore || null;
+    const after = getBackfillHydrationAuditSnapshot("after");
+    const patch = {
+      hydrationAuditAfter: after,
+      ...buildBackfillHydrationPatch(before, after, "after")
+    };
+    Object.assign(state.backfill, patch);
+    appendBackfillTraceEvent("hydration-audit-after", "capture", {
+      beforeIndex: before ? before.firstVisibleDomRegistryIndex : null,
+      afterIndex: after.firstVisibleDomRegistryIndex,
+      result: patch.hydrationDetected ? "hydration-detected" : "no-hydration",
+      reason: patch.hydrationDetectionReason
+    });
+  }
+
+  function scheduleBackfillDelayedHydrationAudit() {
+    if (!state.backfill || !state.backfill.runId || state.backfill._delayedHydrationAuditScheduled) return;
+    const runId = state.backfill.runId;
+    state.backfill._delayedHydrationAuditScheduled = true;
+    setTimeout(() => {
+      if (!state.backfill || state.backfill.runId !== runId || state.backfill.hydrationAuditDelayed) return;
+      const after = state.backfill.hydrationAuditAfter || getBackfillHydrationAuditSnapshot("after");
+      scanMergeSaveBackfillBatch("manual-backfill-post-stop-audit");
+      const delayed = getBackfillHydrationAuditSnapshot("delayed");
+      const delayedPatch = {
+        hydrationAuditDelayed: delayed,
+        hydrationAuditDelayedRanAt: delayed.capturedAt,
+        ...buildBackfillHydrationPatch(after, delayed, "delayed")
+      };
+      Object.assign(state.backfill, delayedPatch);
+      appendBackfillTraceEvent("hydration-audit-delayed", "post-stop-scan", {
+        beforeIndex: after ? after.firstVisibleDomRegistryIndex : null,
+        afterIndex: delayed.firstVisibleDomRegistryIndex,
+        result: delayedPatch.hydrationDetected ? "hydration-detected" : "no-hydration",
+        reason: delayedPatch.hydrationDetectionReason
+      });
+      scheduleDebugPanelRefresh(true);
+    }, 1500);
+  }
+
   function resetBackfillState(reason) {
+    cleanupBackfillUserInterruptGuard();
     state.backfill = createDefaultBackfillState();
     state.backfill.registryCount = state.messageRegistry ? state.messageRegistry.size : 0;
     debugLog("info", "backfill state reset", { reason: reason || "reset" });
@@ -883,13 +1288,32 @@
   }
 
   function setBackfillStatus(status, patch = {}) {
-    state.backfill = {
+    let next = {
       ...createDefaultBackfillState(),
       ...(state.backfill || {}),
       ...patch,
       status: status || (state.backfill && state.backfill.status) || "idle",
       registryCount: state.messageRegistry ? state.messageRegistry.size : 0
     };
+    if (isBackfillTerminalStatus(next.status)) next = applyBackfillKnownGapStopIfNeeded(next, patch);
+    next.scrollMetricTrustedAsSuccess = false;
+    next.wheelFallbackEnabled = BACKFILL_ENABLE_WHEEL_FALLBACK;
+    next.backfillHumanStatus = patch.backfillHumanStatus || getBackfillHumanStatus(next);
+    state.backfill = next;
+    if (isBackfillTerminalStatus(state.backfill.status) && state.backfill.safeAnchorStalledKnownGap && !state.backfill._knownGapTraceRecorded) {
+      appendBackfillTraceEvent("known-gap-stop", "stop", {
+        beforeIndex: state.backfill.firstVisibleRegistryIndexBefore,
+        afterIndex: state.backfill.firstVisibleRegistryIndexAfter,
+        result: "failed",
+        reason: state.backfill.rawAnchorFailureReason || state.backfill.lastError
+      });
+      state.backfill._knownGapTraceRecorded = true;
+    }
+    if (isBackfillTerminalStatus(state.backfill.status) && state.backfill.runId) {
+      captureBackfillTerminalHydrationAudit();
+      scheduleBackfillDelayedHydrationAudit();
+    }
+    if (["idle", "completed", "failed", "cancelled"].includes(state.backfill.status)) cleanupBackfillUserInterruptGuard();
     scheduleDebugPanelRefresh(true);
     return state.backfill;
   }
@@ -906,8 +1330,1751 @@
       batchCount: Number(backfill.batchCount || 0),
       scannedVisibleCount: Number(backfill.scannedVisibleCount || 0),
       registryCount: state.messageRegistry ? state.messageRegistry.size : Number(backfill.registryCount || 0),
-      direction: backfill.direction || "up"
+      direction: backfill.direction || "up",
+      scrollTargetDescriptor: backfill.scrollTargetDescriptor || null,
+      scrollTopBefore: backfill.scrollTopBefore,
+      scrollTopAfter: backfill.scrollTopAfter,
+      scrollDelta: backfill.scrollDelta,
+      scrollHeight: backfill.scrollHeight,
+      clientHeight: backfill.clientHeight,
+      windowScrollYBefore: backfill.windowScrollYBefore,
+      windowScrollYAfter: backfill.windowScrollYAfter,
+      lastStopReason: backfill.lastStopReason || null,
+      lastBatchStartedAt: backfill.lastBatchStartedAt || null,
+      lastBatchFinishedAt: backfill.lastBatchFinishedAt || null,
+      lastScrollAttemptAt: backfill.lastScrollAttemptAt || null,
+      lastScrollWorked: !!backfill.lastScrollWorked,
+      scrollMethod: backfill.scrollMethod || null,
+      anchorMessageIdBefore: backfill.anchorMessageIdBefore || null,
+      anchorMessageIdAfter: backfill.anchorMessageIdAfter || null,
+      anchorTopBefore: backfill.anchorTopBefore,
+      anchorTopAfter: backfill.anchorTopAfter,
+      anchorBottomBefore: backfill.anchorBottomBefore,
+      anchorBottomAfter: backfill.anchorBottomAfter,
+      anchorDelta: backfill.anchorDelta,
+      firstVisibleDomMessageIdBefore: backfill.firstVisibleDomMessageIdBefore || null,
+      firstVisibleDomMessageIdAfter: backfill.firstVisibleDomMessageIdAfter || null,
+      firstRegistryMessageIdAtBackfill: backfill.firstRegistryMessageIdAtBackfill || null,
+      anchorScrollAttempted: !!backfill.anchorScrollAttempted,
+      anchorScrollWorked: !!backfill.anchorScrollWorked,
+      anchorCandidateCount: Number(backfill.anchorCandidateCount || 0),
+      anchorCandidateTriedCount: Number(backfill.anchorCandidateTriedCount || 0),
+      anchorCandidateIds: Array.isArray(backfill.anchorCandidateIds) ? backfill.anchorCandidateIds.slice() : [],
+      anchorTriedIds: Array.isArray(backfill.anchorTriedIds) ? backfill.anchorTriedIds.slice() : [],
+      anchorRawCandidateCount: Number(backfill.anchorRawCandidateCount || 0),
+      anchorRankedCandidateCount: Number(backfill.anchorRankedCandidateCount || 0),
+      anchorRelaxedCandidateCount: Number(backfill.anchorRelaxedCandidateCount || 0),
+      anchorRawCandidateIds: Array.isArray(backfill.anchorRawCandidateIds) ? backfill.anchorRawCandidateIds.slice() : [],
+      anchorRankedCandidateIds: Array.isArray(backfill.anchorRankedCandidateIds) ? backfill.anchorRankedCandidateIds.slice() : [],
+      anchorRelaxedCandidateIds: Array.isArray(backfill.anchorRelaxedCandidateIds) ? backfill.anchorRelaxedCandidateIds.slice() : [],
+      anchorRejectedCandidateCount: Number(backfill.anchorRejectedCandidateCount || 0),
+      anchorRejectedReasons: Array.isArray(backfill.anchorRejectedReasons) ? backfill.anchorRejectedReasons.slice() : [],
+      relaxedAnchorTriedCount: Number(backfill.relaxedAnchorTriedCount || 0),
+      relaxedAnchorTriedIds: Array.isArray(backfill.relaxedAnchorTriedIds) ? backfill.relaxedAnchorTriedIds.slice() : [],
+      relaxedAnchorWorkedId: backfill.relaxedAnchorWorkedId || null,
+      anchorAttemptHistory: Array.isArray(backfill.anchorAttemptHistory) ? backfill.anchorAttemptHistory.slice() : [],
+      relaxedAnchorAttemptHistory: Array.isArray(backfill.relaxedAnchorAttemptHistory) ? backfill.relaxedAnchorAttemptHistory.slice() : [],
+      anchorWorkedId: backfill.anchorWorkedId || null,
+      anchorFailureReason: backfill.anchorFailureReason || null,
+      anchorStrategy: backfill.anchorStrategy || null,
+      anchorRegistryIndexBefore: backfill.anchorRegistryIndexBefore,
+      anchorRegistryIndexAfter: backfill.anchorRegistryIndexAfter,
+      firstVisibleRegistryIndexBefore: backfill.firstVisibleRegistryIndexBefore,
+      firstVisibleRegistryIndexAfter: backfill.firstVisibleRegistryIndexAfter,
+      progressRoundCount: Number(backfill.progressRoundCount || 0),
+      noProgressRoundCount: Number(backfill.noProgressRoundCount || 0),
+      noProgressRoundLimit: Number(backfill.noProgressRoundLimit || 6),
+      lastProgressReason: backfill.lastProgressReason || null,
+      progressComparedToBest: !!backfill.progressComparedToBest,
+      bestProgressUpdatedAt: backfill.bestProgressUpdatedAt || null,
+      anchorMovedOnlyIgnoredAsProgress: !!backfill.anchorMovedOnlyIgnoredAsProgress,
+      lastBestProgressReason: backfill.lastBestProgressReason || null,
+      bestFirstVisibleRegistryIndex: backfill.bestFirstVisibleRegistryIndex,
+      bestRegistryCount: Number(backfill.bestRegistryCount || 0),
+      bestFirstVisibleDomMessageId: backfill.bestFirstVisibleDomMessageId || null,
+      bestVisibleDomUserMessageCount: Number(backfill.bestVisibleDomUserMessageCount || 0),
+      viewportSignature: backfill.viewportSignature || null,
+      recentViewportSignatures: Array.isArray(backfill.recentViewportSignatures) ? backfill.recentViewportSignatures.slice() : [],
+      repeatedViewportSignatureCount: Number(backfill.repeatedViewportSignatureCount || 0),
+      uniqueRecentViewportSignatureCount: Number(backfill.uniqueRecentViewportSignatureCount || 0),
+      oscillationDetected: !!backfill.oscillationDetected,
+      oscillationSignature: backfill.oscillationSignature || null,
+      oscillationPattern: backfill.oscillationPattern || null,
+      oscillationStopTriggeredAt: backfill.oscillationStopTriggeredAt || null,
+      roundsSinceBestProgress: Number(backfill.roundsSinceBestProgress || 0),
+      topProbeCount: Number(backfill.topProbeCount || 0),
+      topProbeMax: Number(backfill.topProbeMax || 6),
+      topProbeActive: !!backfill.topProbeActive,
+      anchorBlacklistedIds: Array.isArray(backfill.anchorBlacklistedIds) ? backfill.anchorBlacklistedIds.slice() : [],
+      anchorReverseMovementCount: Number(backfill.anchorReverseMovementCount || 0),
+      lastRejectedAnchorReason: backfill.lastRejectedAnchorReason || null,
+      blacklistedRelaxedCandidateExcludedCount: Number(backfill.blacklistedRelaxedCandidateExcludedCount || 0),
+      blacklistedCandidateTriedCount: Number(backfill.blacklistedCandidateTriedCount || 0),
+      relaxedSkippedBlacklistedIds: Array.isArray(backfill.relaxedSkippedBlacklistedIds) ? backfill.relaxedSkippedBlacklistedIds.slice() : [],
+      allCandidatesBlacklisted: !!backfill.allCandidatesBlacklisted,
+      relaxedLaterCandidateExcludedCount: Number(backfill.relaxedLaterCandidateExcludedCount || 0),
+      relaxedSkippedLaterCandidateIds: Array.isArray(backfill.relaxedSkippedLaterCandidateIds) ? backfill.relaxedSkippedLaterCandidateIds.slice() : [],
+      relaxedMonotonicGuardEnabled: backfill.relaxedMonotonicGuardEnabled !== false,
+      relaxedRejectedByBestIndexCount: Number(backfill.relaxedRejectedByBestIndexCount || 0),
+      relaxedRejectedByCurrentIndexCount: Number(backfill.relaxedRejectedByCurrentIndexCount || 0),
+      visualAnchorMovedOnly: !!backfill.visualAnchorMovedOnly,
+      visualMoveRejectedAsProgress: !!backfill.visualMoveRejectedAsProgress,
+      anchorRejectedBecauseLaterThanBest: !!backfill.anchorRejectedBecauseLaterThanBest,
+      anchorRejectedBecauseReverseAfterScroll: !!backfill.anchorRejectedBecauseReverseAfterScroll,
+      anchorWorkedRequiresBestProgress: backfill.anchorWorkedRequiresBestProgress !== false,
+      reverseMovementDetected: !!backfill.reverseMovementDetected,
+      reverseMovementFromIndex: backfill.reverseMovementFromIndex,
+      reverseMovementToIndex: backfill.reverseMovementToIndex,
+      reverseMovementAnchorId: backfill.reverseMovementAnchorId || null,
+      reverseMovementStoppedImmediately: !!backfill.reverseMovementStoppedImmediately,
+      wheelFallbackAttempted: !!backfill.wheelFallbackAttempted,
+      wheelFallbackAttemptCount: Number(backfill.wheelFallbackAttemptCount || 0),
+      wheelFallbackWorked: !!backfill.wheelFallbackWorked,
+      wheelFallbackLastDeltaY: backfill.wheelFallbackLastDeltaY,
+      wheelFallbackTargetDescriptor: backfill.wheelFallbackTargetDescriptor || null,
+      wheelFallbackEnabled: BACKFILL_ENABLE_WHEEL_FALLBACK,
+      wheelFallbackSkippedReason: backfill.wheelFallbackSkippedReason || (BACKFILL_ENABLE_WHEEL_FALLBACK ? null : "disabled-for-stability"),
+      pageUpFallbackAttempted: !!backfill.pageUpFallbackAttempted,
+      pageUpFallbackWorked: !!backfill.pageUpFallbackWorked,
+      fallbackProgressReason: backfill.fallbackProgressReason || null,
+      wheelFallbackSignatureBefore: backfill.wheelFallbackSignatureBefore || null,
+      wheelFallbackSignatureAfter: backfill.wheelFallbackSignatureAfter || null,
+      topHydrationProbeAttempted: !!backfill.topHydrationProbeAttempted,
+      topHydrationProbeCount: Number(backfill.topHydrationProbeCount || 0),
+      topHydrationProbeWorked: !!backfill.topHydrationProbeWorked,
+      topHydrationProbeReason: backfill.topHydrationProbeReason || null,
+      topHydrationProbeRegistryCountBefore: backfill.topHydrationProbeRegistryCountBefore,
+      topHydrationProbeRegistryCountAfter: backfill.topHydrationProbeRegistryCountAfter,
+      topHydrationProbeFirstRegistryBefore: backfill.topHydrationProbeFirstRegistryBefore || null,
+      topHydrationProbeFirstRegistryAfter: backfill.topHydrationProbeFirstRegistryAfter || null,
+      topHydrationProbeFirstVisibleIndexBefore: backfill.topHydrationProbeFirstVisibleIndexBefore,
+      topHydrationProbeFirstVisibleIndexAfter: backfill.topHydrationProbeFirstVisibleIndexAfter,
+      visualScrollObservedButNoHydration: !!backfill.visualScrollObservedButNoHydration,
+      scrollMetricTrustedAsSuccess: false,
+      userInterruptGuardEnabled: !!backfill.userInterruptGuardEnabled,
+      userInterruptDetected: !!backfill.userInterruptDetected,
+      userInterruptType: backfill.userInterruptType || null,
+      userInterruptAt: backfill.userInterruptAt || null,
+      userInterruptCancelledBackfill: !!backfill.userInterruptCancelledBackfill,
+      backfillHumanStatus: getBackfillHumanStatus(backfill),
+      backfillTraceSummary: {
+        count: Array.isArray(backfill.backfillTraceEvents) ? backfill.backfillTraceEvents.length : 0,
+        lastEvents: Array.isArray(backfill.backfillTraceEvents) ? backfill.backfillTraceEvents.slice(-20) : []
+      },
+      hydrationAuditBefore: backfill.hydrationAuditBefore || null,
+      hydrationAuditAfter: backfill.hydrationAuditAfter || null,
+      hydrationAuditDelayed: backfill.hydrationAuditDelayed || null,
+      hydrationAuditDelayedRanAt: backfill.hydrationAuditDelayedRanAt || null,
+      hydrationAuditDelayedRegistryDelta: backfill.hydrationAuditDelayedRegistryDelta,
+      hydrationAuditDelayedVisibleDomDelta: backfill.hydrationAuditDelayedVisibleDomDelta,
+      hydrationAuditSummary: {
+        before: backfill.hydrationAuditBefore || null,
+        after: backfill.hydrationAuditAfter || null,
+        delayed: backfill.hydrationAuditDelayed || null,
+        result: {
+          hydrationDetected: !!backfill.hydrationDetected,
+          hydrationDetectionReason: backfill.hydrationDetectionReason || null,
+          hydrationRegistryDelta: Number(backfill.hydrationRegistryDelta || 0),
+          hydrationVisibleDomDelta: Number(backfill.hydrationVisibleDomDelta || 0),
+          hydrationFirstRegistryChanged: !!backfill.hydrationFirstRegistryChanged,
+          hydrationFirstVisibleIndexImproved: !!backfill.hydrationFirstVisibleIndexImproved,
+          hydrationDiscoveredNewEarlierMessage: !!backfill.hydrationDiscoveredNewEarlierMessage,
+          hydrationRevealedKnownCachedMessage: !!backfill.hydrationRevealedKnownCachedMessage,
+          hydrationOnlyVisualMovement: !!backfill.hydrationOnlyVisualMovement,
+          knownTopGapAtStop: backfill.knownTopGapAtStop,
+          safeAnchorStalledKnownGap: !!backfill.safeAnchorStalledKnownGap,
+          rawAnchorFailureReason: backfill.rawAnchorFailureReason || null
+        }
+      },
+      hydrationDetected: !!backfill.hydrationDetected,
+      hydrationDetectionReason: backfill.hydrationDetectionReason || null,
+      hydrationRegistryDelta: Number(backfill.hydrationRegistryDelta || 0),
+      hydrationVisibleDomDelta: Number(backfill.hydrationVisibleDomDelta || 0),
+      hydrationFirstRegistryChanged: !!backfill.hydrationFirstRegistryChanged,
+      hydrationFirstVisibleIndexImproved: !!backfill.hydrationFirstVisibleIndexImproved,
+      hydrationDiscoveredNewEarlierMessage: !!backfill.hydrationDiscoveredNewEarlierMessage,
+      hydrationRevealedKnownCachedMessage: !!backfill.hydrationRevealedKnownCachedMessage,
+      hydrationOnlyVisualMovement: !!backfill.hydrationOnlyVisualMovement,
+      rawAnchorFailureReason: backfill.rawAnchorFailureReason || null,
+      knownTopGapAtStop: backfill.knownTopGapAtStop,
+      safeAnchorStalledKnownGap: !!backfill.safeAnchorStalledKnownGap,
+      completionConfidence: backfill.completionConfidence || null
     };
+  }
+
+  function waitForBackfillFrame(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function isBackfillDocumentScrollNode(node) {
+    return node === window || node === document || node === document.scrollingElement || node === document.documentElement || node === document.body;
+  }
+
+  function createBackfillScrollTarget(node, source) {
+    if (!node) return null;
+    return {
+      node,
+      source: source || "unknown",
+      isDocument: isBackfillDocumentScrollNode(node)
+    };
+  }
+
+  function getBackfillScrollMetrics(target) {
+    const node = target && target.node;
+    if (!node) {
+      return { scrollTop: 0, scrollHeight: 0, clientHeight: 0, windowScrollY: window.scrollY || 0, canScroll: false, canScrollUp: false };
+    }
+
+    if (target.isDocument) {
+      const doc = document.documentElement;
+      const body = document.body;
+      const scrollTop = window.scrollY || doc.scrollTop || body.scrollTop || 0;
+      const scrollHeight = Math.max(doc.scrollHeight || 0, body.scrollHeight || 0);
+      const clientHeight = window.innerHeight || doc.clientHeight || body.clientHeight || 0;
+      return {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+        windowScrollY: window.scrollY || scrollTop,
+        canScroll: scrollHeight > clientHeight + 20,
+        canScrollUp: scrollTop > 0
+      };
+    }
+
+    const scrollTop = Number(node.scrollTop || 0);
+    const scrollHeight = Number(node.scrollHeight || 0);
+    const clientHeight = Number(node.clientHeight || 0);
+    return {
+      scrollTop,
+      scrollHeight,
+      clientHeight,
+      windowScrollY: window.scrollY || 0,
+      canScroll: scrollHeight > clientHeight + 20,
+      canScrollUp: scrollTop > 0
+    };
+  }
+
+  function describeBackfillScrollTarget(target) {
+    if (!target) return null;
+    const metrics = getBackfillScrollMetrics(target);
+    const node = target.node;
+    const nodeLabel = target.isDocument ? "document" : describeElementForDebug(node);
+    return [
+      target.source,
+      nodeLabel,
+      "top=" + Math.round(metrics.scrollTop),
+      "height=" + Math.round(metrics.scrollHeight),
+      "client=" + Math.round(metrics.clientHeight),
+      "canUp=" + (metrics.canScrollUp ? "yes" : "no")
+    ].join(" | ");
+  }
+
+  function findBackfillScrollTarget() {
+    const candidates = [];
+    const seen = new Set();
+    const add = (node, source) => {
+      if (!node || isInsidePanel(node)) return;
+      const key = node === window ? "window" : node === document ? "document" : node;
+      if (seen.has(key)) return;
+      seen.add(key);
+      const target = createBackfillScrollTarget(node, source);
+      if (!target) return;
+      const metrics = getBackfillScrollMetrics(target);
+      if (!metrics.canScroll) return;
+      const messageCount = target.isDocument ? document.querySelectorAll("[data-message-author-role]").length :
+        (node.querySelectorAll ? node.querySelectorAll("[data-message-author-role]").length : 0);
+      candidates.push({ target, metrics, messageCount });
+    };
+
+    add(findChatScrollContainer(), "findChatScrollContainer");
+    add(document.scrollingElement, "document.scrollingElement");
+    add(document.documentElement, "document.documentElement");
+    add(document.body, "document.body");
+
+    Array.from(document.querySelectorAll("[data-message-author-role]")).slice(0, 40).forEach((messageNode) => {
+      let current = messageNode.parentElement;
+      let depth = 0;
+      while (current && current !== document.body && depth < 12) {
+        add(current, "message-ancestor");
+        current = current.parentElement;
+        depth += 1;
+      }
+    });
+
+    candidates.sort((a, b) => {
+      if (a.metrics.canScrollUp !== b.metrics.canScrollUp) return a.metrics.canScrollUp ? -1 : 1;
+      if (a.messageCount !== b.messageCount) return b.messageCount - a.messageCount;
+      return (b.metrics.scrollHeight - b.metrics.clientHeight) - (a.metrics.scrollHeight - a.metrics.clientHeight);
+    });
+
+    return candidates.length ? candidates[0].target : null;
+  }
+
+  function scrollBackfillTargetUp(target, amount) {
+    if (!target) return;
+    markProgrammaticScroll();
+    if (target.isDocument) {
+      window.scrollBy({ top: -amount, behavior: "auto" });
+      return;
+    }
+    if (target.node && typeof target.node.scrollBy === "function") {
+      target.node.scrollBy({ top: -amount, behavior: "auto" });
+      return;
+    }
+    if (target.node) target.node.scrollTop = Math.max(0, Number(target.node.scrollTop || 0) - amount);
+  }
+
+  function getFirstVisibleBackfillMessageAnchor() {
+    const nodes = Array.from(document.querySelectorAll(USER_SELECTOR));
+    if (!nodes.length) return null;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const node = nodes.find((item) => {
+      if (!item || isInsidePanel(item) || !item.getBoundingClientRect) return false;
+      const rect = item.getBoundingClientRect();
+      return rect.height > 0 && rect.bottom > 0 && (!viewportHeight || rect.top < viewportHeight);
+    }) || nodes[0];
+    return {
+      node,
+      messageId: node.getAttribute("data-message-id") || null
+    };
+  }
+
+  function getBackfillMessageAnchorMetrics(anchor) {
+    if (!anchor || !anchor.node || !anchor.node.getBoundingClientRect) return null;
+    const rect = anchor.node.getBoundingClientRect();
+    return {
+      messageId: anchor.messageId || anchor.node.getAttribute("data-message-id") || null,
+      top: rect.top,
+      bottom: rect.bottom,
+      height: rect.height
+    };
+  }
+
+  async function scrollBackfillAnchorIntoView(anchor) {
+    if (!anchor || !anchor.node || typeof anchor.node.scrollIntoView !== "function") return false;
+    markProgrammaticScroll();
+    anchor.node.scrollIntoView({ block: "end", behavior: "auto" });
+    await waitForBackfillFrame(600);
+    return true;
+  }
+
+  function didBackfillAnchorMove(before, after) {
+    if (!before || !after) return false;
+    if (before.messageId && after.messageId && before.messageId !== after.messageId) return true;
+    return Math.abs(Number(after.top || 0) - Number(before.top || 0)) > 8 ||
+      Math.abs(Number(after.bottom || 0) - Number(before.bottom || 0)) > 8;
+  }
+
+  function getRegistryOrderIndex(messageId) {
+    if (!messageId || !state.messageOrder || !state.messageOrder.length) return -1;
+    return state.messageOrder.indexOf(messageId);
+  }
+
+  function getBackfillVisibleUserNodes() {
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    return Array.from(document.querySelectorAll(USER_SELECTOR)).filter((node) => {
+      if (!node || isInsidePanel(node) || !node.getBoundingClientRect) return false;
+      const rect = node.getBoundingClientRect();
+      return rect.height > 0 && rect.bottom > 0 && (!viewportHeight || rect.top < viewportHeight);
+    });
+  }
+
+  function getBackfillViewportMetrics(activeAnchorId) {
+    const visibleNodes = getBackfillVisibleUserNodes();
+    const allNodes = Array.from(document.querySelectorAll(USER_SELECTOR));
+    const firstNode = visibleNodes[0] || allNodes[0] || null;
+    const lastNode = visibleNodes.length ? visibleNodes[visibleNodes.length - 1] : allNodes.length ? allNodes[allNodes.length - 1] : null;
+    const firstVisibleDomMessageId = firstNode ? firstNode.getAttribute("data-message-id") || null : null;
+    const lastVisibleDomMessageId = lastNode ? lastNode.getAttribute("data-message-id") || null : null;
+    const firstVisibleRegistryIndex = getRegistryOrderIndex(firstVisibleDomMessageId);
+    const visibleDomUserMessageCount = allNodes.length;
+    const viewportSignature = [
+      firstVisibleDomMessageId || "none",
+      lastVisibleDomMessageId || "none",
+      firstVisibleRegistryIndex,
+      visibleDomUserMessageCount,
+      activeAnchorId || "none"
+    ].join("|");
+    return {
+      firstVisibleDomMessageId,
+      lastVisibleDomMessageId,
+      firstVisibleRegistryIndex,
+      visibleDomUserMessageCount,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      firstRegistryMessageId: state.messageOrder && state.messageOrder[0] ? state.messageOrder[0] : null,
+      messageHash: state.messageHash || "",
+      viewportSignature
+    };
+  }
+
+  function getBackfillViewportSignature(activeAnchorId) {
+    return getBackfillViewportMetrics(activeAnchorId).viewportSignature;
+  }
+
+  function recordBackfillProgress(current, extra) {
+    const anchorDelta = extra && typeof extra.anchorDelta === "number" ? extra.anchorDelta : null;
+    const previousBestIndex = typeof state.backfill.bestFirstVisibleRegistryIndex === "number" ? state.backfill.bestFirstVisibleRegistryIndex : null;
+    const previousBestRegistryCount = Number(state.backfill.bestRegistryCount || 0);
+    const previousBestVisibleCount = Number(state.backfill.bestVisibleDomUserMessageCount || 0);
+    const previousBestMessageId = state.backfill.bestFirstVisibleDomMessageId || null;
+    const previousBestFirstRegistryMessageId = state.backfill._bestFirstRegistryMessageId || null;
+    const previousBestMessageHash = state.backfill._bestMessageHash || "";
+    const reasons = [];
+    if (!state.backfill._lastProgressMetrics) {
+      reasons.push("initial-snapshot");
+    }
+    if (Number(current.registryCount || 0) > previousBestRegistryCount) reasons.push("registry-count-increased");
+    if (previousBestFirstRegistryMessageId && current.firstRegistryMessageId && current.firstRegistryMessageId !== previousBestFirstRegistryMessageId) {
+      reasons.push("first-registry-message-changed");
+    }
+    if (current.firstVisibleRegistryIndex >= 0 &&
+      (previousBestIndex == null || current.firstVisibleRegistryIndex < previousBestIndex)) {
+      reasons.push("best-first-visible-index-decreased");
+    }
+    if (current.firstVisibleDomMessageId &&
+      current.firstVisibleDomMessageId !== previousBestMessageId &&
+      current.firstVisibleRegistryIndex >= 0 &&
+      (previousBestIndex == null || current.firstVisibleRegistryIndex < previousBestIndex)) {
+      reasons.push("best-first-visible-id-earlier");
+    }
+    if ((current.messageHash || "") !== previousBestMessageHash &&
+      (Number(current.registryCount || 0) > previousBestRegistryCount ||
+        Number(current.visibleDomUserMessageCount || 0) > previousBestVisibleCount ||
+        (current.firstVisibleRegistryIndex >= 0 && (previousBestIndex == null || current.firstVisibleRegistryIndex < previousBestIndex)))) {
+      reasons.push("message-hash-best-progress");
+    }
+
+    const progress = reasons.length > 0;
+    const anchorMovedOnly = !progress && anchorDelta != null && Math.abs(anchorDelta) > 8;
+    const recent = Array.isArray(state.backfill.recentViewportSignatures) ? state.backfill.recentViewportSignatures.slice() : [];
+    recent.push(current.viewportSignature);
+    const trimmedRecent = recent.slice(-12);
+    const recentEight = trimmedRecent.slice(-8);
+    const repeatedCount = trimmedRecent.filter((signature) => signature === current.viewportSignature).length;
+    const uniqueRecentCount = new Set(trimmedRecent).size;
+    const uniqueRecentEightCount = new Set(recentEight).size;
+    const progressRoundCount = Number(state.backfill.progressRoundCount || 0) + 1;
+    const noProgressRoundCount = progress ? 0 : Number(state.backfill.noProgressRoundCount || 0) + 1;
+    const roundsSinceBestProgress = progress ? 0 : Number(state.backfill.roundsSinceBestProgress || 0) + 1;
+    const registryBestUnchanged = Number(current.registryCount || 0) <= previousBestRegistryCount;
+    const bestIndexUnchanged = previousBestIndex != null && current.firstVisibleRegistryIndex >= previousBestIndex;
+    const oscillationDetected = (recentEight.length >= 8 && uniqueRecentEightCount <= 2 && roundsSinceBestProgress >= 3 && registryBestUnchanged && bestIndexUnchanged) ||
+      (trimmedRecent.length >= 8 && uniqueRecentCount <= 3 && repeatedCount >= 4 && roundsSinceBestProgress >= 4 && registryBestUnchanged && bestIndexUnchanged);
+    const bestFirstVisibleRegistryIndex = current.firstVisibleRegistryIndex >= 0 ?
+      previousBestIndex == null ? current.firstVisibleRegistryIndex : Math.min(previousBestIndex, current.firstVisibleRegistryIndex) :
+      previousBestIndex;
+    const bestRegistryCount = Math.max(Number(state.backfill.bestRegistryCount || 0), Number(current.registryCount || 0));
+    const bestVisibleDomUserMessageCount = Math.max(Number(state.backfill.bestVisibleDomUserMessageCount || 0), Number(current.visibleDomUserMessageCount || 0));
+    const bestFirstVisibleDomMessageId = progress && current.firstVisibleRegistryIndex === bestFirstVisibleRegistryIndex ?
+      current.firstVisibleDomMessageId : state.backfill.bestFirstVisibleDomMessageId || current.firstVisibleDomMessageId;
+    const progressReason = progress ? reasons.join(",") : anchorMovedOnly ? "anchor-moved-only-no-best-progress" : "no-progress";
+    const patch = {
+      progressRoundCount,
+      noProgressRoundCount,
+      noProgressRoundLimit: Number(state.backfill.noProgressRoundLimit || 6),
+      lastProgressReason: progressReason,
+      progressComparedToBest: progress,
+      bestProgressUpdatedAt: progress ? new Date().toISOString() : state.backfill.bestProgressUpdatedAt || null,
+      anchorMovedOnlyIgnoredAsProgress: anchorMovedOnly,
+      lastBestProgressReason: progress ? reasons.join(",") : state.backfill.lastBestProgressReason || null,
+      bestFirstVisibleRegistryIndex,
+      bestRegistryCount,
+      bestFirstVisibleDomMessageId,
+      bestVisibleDomUserMessageCount,
+      viewportSignature: current.viewportSignature,
+      recentViewportSignatures: trimmedRecent,
+      repeatedViewportSignatureCount: repeatedCount,
+      uniqueRecentViewportSignatureCount: uniqueRecentCount,
+      oscillationDetected,
+      oscillationSignature: oscillationDetected ? current.viewportSignature : state.backfill.oscillationSignature || null,
+      oscillationPattern: oscillationDetected ? recentEight.join(" -> ") : state.backfill.oscillationPattern || null,
+      oscillationStopTriggeredAt: oscillationDetected ? new Date().toISOString() : state.backfill.oscillationStopTriggeredAt || null,
+      roundsSinceBestProgress,
+      _lastProgressMetrics: current,
+      _bestFirstRegistryMessageId: progress ? current.firstRegistryMessageId || previousBestFirstRegistryMessageId : previousBestFirstRegistryMessageId || current.firstRegistryMessageId,
+      _bestMessageHash: progress ? current.messageHash || previousBestMessageHash : previousBestMessageHash || current.messageHash
+    };
+    setBackfillStatus(state.backfill.status || "running", patch);
+    return { progress, reasons, noProgressRoundCount, oscillationDetected };
+  }
+
+  async function tryBackfillTopHydrationProbe(context) {
+    const anchor = getFirstVisibleBackfillMessageAnchor();
+    const before = context && context.beforeMetrics ? context.beforeMetrics : getBackfillViewportMetrics(anchor && anchor.messageId);
+    if (anchor && anchor.node && typeof anchor.node.scrollIntoView === "function") {
+      markProgrammaticScroll();
+      anchor.node.scrollIntoView({ block: "start", behavior: "auto" });
+    }
+    try {
+      markProgrammaticScroll();
+      window.dispatchEvent(new WheelEvent("wheel", { deltaY: -420, deltaMode: 0, bubbles: true, cancelable: true }));
+    } catch (error) {
+      debugLog("warn", "backfill top hydration wheel probe failed", { message: error && error.message ? error.message : String(error) });
+    }
+    await waitForBackfillFrame(1200);
+    const scanMetrics = scanMergeSaveBackfillBatch("manual-backfill-top-probe");
+    const after = getBackfillViewportMetrics(anchor && anchor.messageId);
+    const progress = evaluateBackfillUsefulProgress(before, after, scanMetrics, {
+      registryCountBefore: before.registryCount
+    });
+    const hydratedEarlier = progress.useful;
+    const visualOnly = !hydratedEarlier && (
+      after.firstVisibleDomMessageId !== before.firstVisibleDomMessageId ||
+      after.visibleDomUserMessageCount !== before.visibleDomUserMessageCount ||
+      after.messageHash !== before.messageHash
+    );
+    return {
+      hydratedEarlier,
+      unsafeReverse: progress.reverseMovement,
+      reason: hydratedEarlier ? progress.reasons.join(",") : progress.reverseMovement ? "unsafe-reverse-hydration-probe" : "no-hydration-progress",
+      visualOnly,
+      scanMetrics,
+      before,
+      after,
+      anchorId: anchor && anchor.messageId ? anchor.messageId : null
+    };
+  }
+
+  function getBackfillMessageAnchorCandidates() {
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    return Array.from(document.querySelectorAll(USER_SELECTOR)).map((node, index) => {
+      if (!node || isInsidePanel(node) || !node.getBoundingClientRect) return null;
+      const rect = node.getBoundingClientRect();
+      const messageId = node.getAttribute("data-message-id") || "user-" + index;
+      const isVisible = rect.height > 0 && rect.bottom > 0 && (!viewportHeight || rect.top < viewportHeight);
+      return {
+        node,
+        messageId,
+        index,
+        top: rect.top,
+        bottom: rect.bottom,
+        height: rect.height,
+        isVisible,
+        isAboveViewport: rect.bottom <= 0,
+        isPartiallyVisible: rect.height > 0 && rect.bottom > 0 && rect.top < viewportHeight,
+        registryIndex: getRegistryOrderIndex(messageId)
+      };
+    }).filter(Boolean);
+  }
+
+  function rankBackfillAnchorCandidates(candidates, context) {
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const currentIndex = context && typeof context.currentFirstVisibleRegistryIndex === "number" ? context.currentFirstVisibleRegistryIndex : -1;
+    const blacklist = new Set((state.backfill && state.backfill.anchorBlacklistedIds) || []);
+    return (candidates || []).filter((candidate) => {
+      if (!candidate || blacklist.has(candidate.messageId)) return false;
+      if (!isBackfillCandidateMonotonic(candidate, context)) return false;
+      if (currentIndex === 0 && candidate.registryIndex === 0) return false;
+      return true;
+    }).sort((a, b) => {
+      const aEarlier = currentIndex > 0 && a.registryIndex >= 0 && a.registryIndex < currentIndex;
+      const bEarlier = currentIndex > 0 && b.registryIndex >= 0 && b.registryIndex < currentIndex;
+      if (aEarlier !== bEarlier) return aEarlier ? -1 : 1;
+      const aKnown = a.registryIndex >= 0;
+      const bKnown = b.registryIndex >= 0;
+      if (aKnown !== bKnown) return aKnown ? -1 : 1;
+      if (aKnown && bKnown && a.registryIndex !== b.registryIndex) return a.registryIndex - b.registryIndex;
+      const aNearViewport = a.top < viewportHeight;
+      const bNearViewport = b.top < viewportHeight;
+      if (aNearViewport !== bNearViewport) return aNearViewport ? -1 : 1;
+      if (a.isPartiallyVisible !== b.isPartiallyVisible) return a.isPartiallyVisible ? -1 : 1;
+      if (a.top !== b.top) return a.top - b.top;
+      return a.index - b.index;
+    });
+  }
+
+  function getBackfillAnchorCandidateIds(candidates) {
+    return (candidates || []).map((candidate) => candidate && candidate.messageId).filter(Boolean);
+  }
+
+  function getBackfillAnchorRejectedReasons(candidates, ranked, context) {
+    const rankedIds = new Set(getBackfillAnchorCandidateIds(ranked));
+    const blacklist = new Set((state.backfill && state.backfill.anchorBlacklistedIds) || []);
+    const currentIndex = context && typeof context.currentFirstVisibleRegistryIndex === "number" ? context.currentFirstVisibleRegistryIndex : -1;
+    return (candidates || []).filter((candidate) => candidate && !rankedIds.has(candidate.messageId)).map((candidate) => {
+      let reason = "filtered-by-ranking";
+      if (blacklist.has(candidate.messageId)) reason = "blacklisted";
+      else if (currentIndex > 0 && candidate.registryIndex >= 0 && candidate.registryIndex > currentIndex) reason = "later-registry-index";
+      else if (currentIndex === 0 && candidate.registryIndex === 0) reason = "known-start-anchor";
+      else {
+        const monotonicReason = getBackfillCandidateMonotonicRejection(candidate, context);
+        if (monotonicReason) reason = monotonicReason;
+      }
+      return candidate.messageId + ":" + reason;
+    });
+  }
+
+  function getBackfillCandidateMonotonicRejection(candidate, context) {
+    if (!candidate || typeof candidate.registryIndex !== "number" || candidate.registryIndex < 0) return "unknown-registry-index";
+    const bestIndex = typeof state.backfill.bestFirstVisibleRegistryIndex === "number" ? state.backfill.bestFirstVisibleRegistryIndex : -1;
+    const currentIndex = context && typeof context.currentFirstVisibleRegistryIndex === "number" ? context.currentFirstVisibleRegistryIndex : -1;
+    if (bestIndex >= 0 && candidate.registryIndex > bestIndex) return "later-than-best-index";
+    if (bestIndex < 0 && currentIndex >= 0 && candidate.registryIndex > currentIndex) return "later-than-current-index";
+    if (currentIndex >= 0 && candidate.registryIndex > currentIndex) return "later-than-current-index";
+    return null;
+  }
+
+  function isBackfillCandidateMonotonic(candidate, context) {
+    return !getBackfillCandidateMonotonicRejection(candidate, context);
+  }
+
+  function rankBackfillRelaxedAnchorCandidates(candidates, context) {
+    const blacklist = new Set((state.backfill && state.backfill.anchorBlacklistedIds) || []);
+    const tried = new Set((context && context.triedIds) || []);
+    const skippedBlacklisted = (candidates || []).filter((candidate) => candidate && blacklist.has(candidate.messageId));
+    const skippedLater = [];
+    let rejectedByBest = 0;
+    let rejectedByCurrent = 0;
+    const raw = (candidates || []).filter((candidate) => {
+      if (!candidate || !candidate.node || !candidate.node.isConnected) return false;
+      if (blacklist.has(candidate.messageId)) return false;
+      const monotonicReason = getBackfillCandidateMonotonicRejection(candidate, context);
+      if (monotonicReason) {
+        skippedLater.push(candidate);
+        if (monotonicReason === "later-than-best-index") rejectedByBest += 1;
+        if (monotonicReason === "later-than-current-index") rejectedByCurrent += 1;
+        return false;
+      }
+      return true;
+    });
+    setBackfillStatus(state.backfill.status || "running", {
+      blacklistedRelaxedCandidateExcludedCount: skippedBlacklisted.length,
+      relaxedSkippedBlacklistedIds: skippedBlacklisted.map((candidate) => candidate.messageId).filter(Boolean),
+      allCandidatesBlacklisted: !!((candidates || []).length && !raw.length && skippedBlacklisted.length === (candidates || []).length),
+      relaxedLaterCandidateExcludedCount: skippedLater.length,
+      relaxedSkippedLaterCandidateIds: skippedLater.map((candidate) => candidate.messageId).filter(Boolean),
+      relaxedMonotonicGuardEnabled: true,
+      relaxedRejectedByBestIndexCount: rejectedByBest,
+      relaxedRejectedByCurrentIndexCount: rejectedByCurrent,
+      anchorRejectedBecauseLaterThanBest: rejectedByBest > 0
+    });
+    const notTried = raw.filter((candidate) => !tried.has(candidate.messageId));
+    const pool = notTried.length ? notTried : raw;
+    return pool.sort((a, b) => {
+      if (a.isAboveViewport !== b.isAboveViewport) return a.isAboveViewport ? -1 : 1;
+      if (a.isPartiallyVisible !== b.isPartiallyVisible) return a.isPartiallyVisible ? -1 : 1;
+      if (a.top !== b.top) return a.top - b.top;
+      return a.index - b.index;
+    });
+  }
+
+  function evaluateBackfillUsefulProgress(beforeMetrics, afterMetrics, scanMetrics, context) {
+    const beforeIndex = beforeMetrics && typeof beforeMetrics.firstVisibleRegistryIndex === "number" ? beforeMetrics.firstVisibleRegistryIndex : -1;
+    const afterIndex = afterMetrics && typeof afterMetrics.firstVisibleRegistryIndex === "number" ? afterMetrics.firstVisibleRegistryIndex : -1;
+    const bestIndex = typeof state.backfill.bestFirstVisibleRegistryIndex === "number" ? state.backfill.bestFirstVisibleRegistryIndex : -1;
+    const beforeRegistryCount = context && typeof context.registryCountBefore === "number" ? context.registryCountBefore :
+      beforeMetrics ? Number(beforeMetrics.registryCount || 0) : 0;
+    const afterRegistryCount = afterMetrics ? Number(afterMetrics.registryCount || 0) : Number(scanMetrics && scanMetrics.registryCount || 0);
+    const reasons = [];
+    if (afterRegistryCount > beforeRegistryCount) reasons.push("registry-count-increased");
+    if (beforeMetrics && afterMetrics && beforeMetrics.firstRegistryMessageId && afterMetrics.firstRegistryMessageId &&
+      beforeMetrics.firstRegistryMessageId !== afterMetrics.firstRegistryMessageId) {
+      reasons.push("first-registry-message-changed");
+    }
+    if (afterIndex >= 0 && bestIndex >= 0 && afterIndex < bestIndex) reasons.push("first-visible-index-below-best");
+    if (afterIndex >= 0 && beforeIndex >= 0 && afterIndex < beforeIndex && (bestIndex < 0 || afterIndex <= bestIndex)) {
+      reasons.push("first-visible-index-decreased-safe");
+    }
+    const reverseMovement = (beforeIndex >= 0 && afterIndex >= 0 && afterIndex > beforeIndex) ||
+      (bestIndex >= 0 && afterIndex >= 0 && afterIndex > bestIndex);
+    const messageHashChanged = !!(beforeMetrics && afterMetrics && beforeMetrics.messageHash !== afterMetrics.messageHash);
+    if (messageHashChanged && reasons.length) reasons.push("message-hash-with-best-progress");
+    return {
+      useful: reasons.length > 0 && !reverseMovement,
+      reasons,
+      reverseMovement,
+      beforeIndex,
+      afterIndex,
+      bestIndex
+    };
+  }
+
+  async function tryBackfillSingleAnchorCandidate(candidate, context, mode) {
+    const firstVisibleIdBefore = context && context.firstVisibleIdBefore;
+    const firstVisibleRegistryIndexBefore = context && typeof context.firstVisibleRegistryIndexBefore === "number" ?
+      context.firstVisibleRegistryIndexBefore : -1;
+    const registryCountBefore = context && typeof context.registryCountBefore === "number" ? context.registryCountBefore :
+      state.messageRegistry ? state.messageRegistry.size : 0;
+    const hasVisibleCountBefore = context && typeof context.visibleDomUserMessageCountBefore === "number";
+    const hasMessageHashBefore = context && typeof context.messageHashBefore === "string";
+    const blacklist = new Set((state.backfill && state.backfill.anchorBlacklistedIds) || []);
+    if (candidate && blacklist.has(candidate.messageId)) {
+      setBackfillStatus(state.backfill.status || "running", {
+        blacklistedCandidateTriedCount: Number(state.backfill.blacklistedCandidateTriedCount || 0) + 1,
+        lastRejectedAnchorReason: "blacklisted-anchor-skipped"
+      });
+      return { worked: false, failureReason: "blacklisted-anchor-skipped" };
+    }
+    const candidateBefore = getBackfillMessageAnchorMetrics(candidate);
+    const beforeViewport = getBackfillViewportMetrics(candidate && candidate.messageId);
+    const attempted = await scrollBackfillAnchorIntoView(candidate);
+    if (!isBackfillStillCurrent(context.runId, context.conversationId)) {
+      return {
+        cancelled: true,
+        cancelReason: state.backfill && state.backfill.cancelRequested ? (state.backfill.lastError || "cancelled") :
+          getConversationId() !== context.conversationId ? "conversation-changed" : "run-replaced"
+      };
+    }
+    if (!attempted) return { worked: false, failureReason: "anchor-scroll-not-supported", candidateBefore };
+
+    const candidateAfter = getBackfillMessageAnchorMetrics(candidate);
+    const firstVisibleAfterAnchor = getFirstVisibleBackfillMessageAnchor();
+    const firstVisibleAfter = getBackfillMessageAnchorMetrics(firstVisibleAfterAnchor);
+    const scanMetrics = scanMergeSaveBackfillBatch(mode === "relaxed" ? "manual-backfill-relaxed-anchor" : "manual-backfill-anchor");
+    const afterViewport = getBackfillViewportMetrics(candidate && candidate.messageId);
+    const firstVisibleRegistryIndexAfter = getRegistryOrderIndex(firstVisibleAfter && firstVisibleAfter.messageId);
+    const usefulProgress = evaluateBackfillUsefulProgress(beforeViewport, afterViewport, scanMetrics, context);
+    const visualAnchorMovedOnly = didBackfillAnchorMove(candidateBefore, candidateAfter) ||
+      !!(firstVisibleAfter && firstVisibleAfter.messageId && firstVisibleAfter.messageId !== firstVisibleIdBefore) ||
+      (hasVisibleCountBefore && Number(scanMetrics.visibleCount || 0) !== Number(context.visibleDomUserMessageCountBefore || 0)) ||
+      (hasMessageHashBefore && (afterViewport.messageHash || "") !== context.messageHashBefore);
+    const anchorWorked = usefulProgress.useful;
+    const reverseMovement = usefulProgress.reverseMovement;
+
+    return {
+      worked: anchorWorked,
+      failureReason: anchorWorked ? null : reverseMovement ? "unsafe-reverse-anchor-prevented" : "anchor-scroll-no-useful-progress",
+      reverseMovement,
+      usefulProgressReason: usefulProgress.reasons.join(",") || null,
+      visualAnchorMovedOnly: visualAnchorMovedOnly && !anchorWorked,
+      visualMoveRejectedAsProgress: visualAnchorMovedOnly && !anchorWorked,
+      scanMetrics,
+      candidateBefore,
+      candidateAfter,
+      firstVisibleAfter,
+      firstVisibleRegistryIndexAfter,
+      anchorRegistryIndexBefore: getRegistryOrderIndex(candidateBefore && candidateBefore.messageId),
+      anchorRegistryIndexAfter: getRegistryOrderIndex(candidateAfter && candidateAfter.messageId)
+    };
+  }
+
+  async function tryBackfillAnchorCandidates(candidates, context) {
+    const ranked = rankBackfillAnchorCandidates(candidates, context).slice(0, 8);
+    const rawIds = getBackfillAnchorCandidateIds(candidates);
+    const rankedIds = getBackfillAnchorCandidateIds(ranked);
+    const rejectedReasons = getBackfillAnchorRejectedReasons(candidates, ranked, context);
+    if ((candidates || []).length && !ranked.length) {
+      setBackfillStatus("running", {
+        lastRejectedAnchorReason: "all-candidates-blacklisted-or-not-earlier"
+      });
+    }
+    const result = {
+      worked: false,
+      cancelled: false,
+      cancelReason: null,
+      failureReason: ranked.length ? "all-anchor-scroll-no-movement" : "no-anchor-message",
+      candidateCount: (candidates || []).length,
+      candidateIds: rawIds,
+      rawCandidateCount: (candidates || []).length,
+      rankedCandidateCount: ranked.length,
+      rawCandidateIds: rawIds,
+      rankedCandidateIds: rankedIds,
+      rejectedCandidateCount: rejectedReasons.length,
+      rejectedReasons,
+      triedIds: [],
+      triedCount: 0,
+      workedId: null,
+      scanCount: 0,
+      scannedVisibleCount: 0,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      anchorBefore: null,
+      anchorAfter: null,
+      firstVisibleAfter: null,
+      firstVisibleRegistryIndexAfter: null,
+      anchorRegistryIndexBefore: null,
+      anchorRegistryIndexAfter: null,
+      safetyStop: false
+    };
+    const firstVisibleIdBefore = context && context.firstVisibleIdBefore;
+    const firstVisibleRegistryIndexBefore = context && typeof context.firstVisibleRegistryIndexBefore === "number" ?
+      context.firstVisibleRegistryIndexBefore : -1;
+    const registryCountBefore = context && typeof context.registryCountBefore === "number" ? context.registryCountBefore : result.registryCount;
+
+    if (!ranked.length) return result;
+
+    for (const candidate of ranked) {
+      if (!isBackfillStillCurrent(context.runId, context.conversationId)) {
+        result.cancelled = true;
+        result.cancelReason = state.backfill && state.backfill.cancelRequested ? (state.backfill.lastError || "cancelled") :
+          getConversationId() !== context.conversationId ? "conversation-changed" : "run-replaced";
+        return result;
+      }
+
+      const candidateBefore = getBackfillMessageAnchorMetrics(candidate);
+      result.triedIds.push(candidate.messageId);
+      result.triedCount = result.triedIds.length;
+      result.anchorBefore = candidateBefore;
+      result.anchorRegistryIndexBefore = getRegistryOrderIndex(candidateBefore && candidateBefore.messageId);
+      appendBackfillTraceEvent("ranked-anchor-try", "try", {
+        anchorId: candidate.messageId,
+        beforeIndex: firstVisibleRegistryIndexBefore
+      });
+
+      setBackfillStatus("running", {
+        anchorCandidateCount: result.candidateCount,
+        anchorCandidateTriedCount: result.triedCount,
+        anchorCandidateIds: result.candidateIds,
+        anchorRawCandidateCount: result.rawCandidateCount,
+        anchorRankedCandidateCount: result.rankedCandidateCount,
+        anchorRawCandidateIds: result.rawCandidateIds,
+        anchorRankedCandidateIds: result.rankedCandidateIds,
+        anchorRejectedCandidateCount: result.rejectedCandidateCount,
+        anchorRejectedReasons: result.rejectedReasons,
+        anchorTriedIds: result.triedIds.slice(),
+        anchorMessageIdBefore: candidateBefore ? candidateBefore.messageId : null,
+        anchorTopBefore: candidateBefore ? candidateBefore.top : null,
+        anchorBottomBefore: candidateBefore ? candidateBefore.bottom : null,
+        anchorScrollAttempted: true,
+        anchorScrollWorked: false,
+        anchorFailureReason: null,
+        anchorStrategy: "registry-nearest-multi",
+        anchorRegistryIndexBefore: result.anchorRegistryIndexBefore,
+        firstVisibleRegistryIndexBefore
+      });
+
+      const attempt = await tryBackfillSingleAnchorCandidate(candidate, context, "ranked");
+      if (attempt.cancelled) {
+        result.cancelled = true;
+        result.cancelReason = attempt.cancelReason;
+        return result;
+      }
+      if (!attempt.scanMetrics) {
+        result.failureReason = attempt.failureReason || "anchor-scroll-not-supported";
+        continue;
+      }
+      const candidateAfter = attempt.candidateAfter;
+      const firstVisibleAfter = attempt.firstVisibleAfter;
+      const scanMetrics = attempt.scanMetrics;
+      const firstVisibleRegistryIndexAfter = attempt.firstVisibleRegistryIndexAfter;
+      const anchorWorked = !!attempt.worked;
+      const reverseMovement = !!attempt.reverseMovement;
+      const anchorBlacklistedIds = Array.isArray(state.backfill.anchorBlacklistedIds) ? state.backfill.anchorBlacklistedIds.slice() : [];
+      if (!anchorWorked && candidate.messageId && !anchorBlacklistedIds.includes(candidate.messageId)) anchorBlacklistedIds.push(candidate.messageId);
+      const anchorReverseMovementCount = Number(state.backfill.anchorReverseMovementCount || 0) + (reverseMovement ? 1 : 0);
+      const anchorAttemptHistory = Array.isArray(state.backfill.anchorAttemptHistory) ? state.backfill.anchorAttemptHistory.slice(-12) : [];
+      anchorAttemptHistory.push(candidate.messageId + ":" + (anchorWorked ? "worked" : reverseMovement ? "reverse" : "no-progress"));
+
+      result.scanCount += 1;
+      result.scannedVisibleCount += Number(scanMetrics.visibleCount || 0);
+      result.registryCount = scanMetrics.registryCount;
+      result.anchorAfter = candidateAfter;
+      result.firstVisibleAfter = firstVisibleAfter;
+      result.firstVisibleRegistryIndexAfter = firstVisibleRegistryIndexAfter;
+      result.anchorRegistryIndexAfter = attempt.anchorRegistryIndexAfter;
+      result.failureReason = anchorWorked ? null : attempt.failureReason || "anchor-scroll-no-useful-progress";
+
+      setBackfillStatus("running", {
+        anchorCandidateCount: result.candidateCount,
+        anchorCandidateTriedCount: result.triedCount,
+        anchorCandidateIds: result.candidateIds,
+        anchorTriedIds: result.triedIds.slice(),
+        anchorWorkedId: anchorWorked ? candidate.messageId : null,
+        anchorFailureReason: anchorWorked ? null : result.failureReason,
+        anchorStrategy: "registry-nearest-multi",
+        anchorMessageIdAfter: candidateAfter ? candidateAfter.messageId : null,
+        anchorTopAfter: candidateAfter ? candidateAfter.top : null,
+        anchorBottomAfter: candidateAfter ? candidateAfter.bottom : null,
+        anchorDelta: candidateBefore && candidateAfter ? candidateAfter.top - candidateBefore.top : null,
+        firstVisibleDomMessageIdAfter: firstVisibleAfter ? firstVisibleAfter.messageId : null,
+        anchorScrollAttempted: true,
+        anchorScrollWorked: anchorWorked,
+        visualAnchorMovedOnly: !!attempt.visualAnchorMovedOnly,
+        visualMoveRejectedAsProgress: !!attempt.visualMoveRejectedAsProgress,
+        anchorRejectedBecauseReverseAfterScroll: reverseMovement,
+        anchorWorkedRequiresBestProgress: true,
+        anchorRegistryIndexBefore: result.anchorRegistryIndexBefore,
+        anchorRegistryIndexAfter: result.anchorRegistryIndexAfter,
+        firstVisibleRegistryIndexBefore,
+        firstVisibleRegistryIndexAfter,
+        anchorBlacklistedIds,
+        anchorReverseMovementCount,
+        anchorAttemptHistory,
+        lastRejectedAnchorReason: reverseMovement ? "reverse-registry-index" : anchorWorked ? null : "no-progress-anchor",
+        reverseMovementDetected: reverseMovement,
+        reverseMovementFromIndex: reverseMovement ? firstVisibleRegistryIndexBefore : state.backfill.reverseMovementFromIndex,
+        reverseMovementToIndex: reverseMovement ? firstVisibleRegistryIndexAfter : state.backfill.reverseMovementToIndex,
+        reverseMovementAnchorId: reverseMovement ? candidate.messageId : state.backfill.reverseMovementAnchorId,
+        reverseMovementStoppedImmediately: reverseMovement
+      });
+
+      if (reverseMovement) {
+        appendBackfillTraceEvent("reverse-movement-detected", "safety-stop", {
+          anchorId: candidate.messageId,
+          beforeIndex: firstVisibleRegistryIndexBefore,
+          afterIndex: firstVisibleRegistryIndexAfter,
+          result: "failed",
+          reason: "unsafe-reverse-anchor-prevented"
+        });
+        result.safetyStop = true;
+        result.failureReason = "unsafe-reverse-anchor-prevented";
+        return result;
+      }
+      if (attempt.visualMoveRejectedAsProgress) {
+        appendBackfillTraceEvent("visual-move-rejected", "reject", {
+          anchorId: candidate.messageId,
+          beforeIndex: firstVisibleRegistryIndexBefore,
+          afterIndex: firstVisibleRegistryIndexAfter,
+          result: "ignored",
+          reason: "visual-move-no-best-progress"
+        });
+      }
+      if (anchorWorked) {
+        result.worked = true;
+        result.workedId = candidate.messageId;
+        appendBackfillTraceEvent("best-progress", "ranked-anchor", {
+          anchorId: candidate.messageId,
+          beforeIndex: firstVisibleRegistryIndexBefore,
+          afterIndex: firstVisibleRegistryIndexAfter,
+          result: "worked",
+          reason: attempt.usefulProgressReason || "useful-progress"
+        });
+        return result;
+      }
+    }
+
+    result.failureReason = "all-anchor-scroll-no-movement";
+    return result;
+  }
+
+  async function tryBackfillRelaxedAnchorCandidates(candidates, context) {
+    const relaxed = rankBackfillRelaxedAnchorCandidates(candidates, {
+      ...context,
+      triedIds: (context && context.triedIds) || []
+    }).slice(0, 5);
+    const result = {
+      worked: false,
+      cancelled: false,
+      cancelReason: null,
+      failureReason: relaxed.length ? "all-relaxed-anchor-scroll-no-movement" : "no-relaxed-anchor-message",
+      relaxedCandidateCount: relaxed.length,
+      relaxedCandidateIds: getBackfillAnchorCandidateIds(relaxed),
+      triedIds: [],
+      triedCount: 0,
+      workedId: null,
+      scanCount: 0,
+      scannedVisibleCount: 0,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      anchorBefore: null,
+      anchorAfter: null,
+      firstVisibleAfter: null,
+      firstVisibleRegistryIndexAfter: null,
+      anchorRegistryIndexBefore: null,
+      anchorRegistryIndexAfter: null,
+      safetyStop: false
+    };
+
+    if (!relaxed.length) return result;
+
+    for (const candidate of relaxed) {
+      if (!isBackfillStillCurrent(context.runId, context.conversationId)) {
+        result.cancelled = true;
+        result.cancelReason = state.backfill && state.backfill.cancelRequested ? (state.backfill.lastError || "cancelled") :
+          getConversationId() !== context.conversationId ? "conversation-changed" : "run-replaced";
+        return result;
+      }
+
+      result.triedIds.push(candidate.messageId);
+      result.triedCount = result.triedIds.length;
+      appendBackfillTraceEvent("relaxed-anchor-try", "try", {
+        anchorId: candidate.messageId,
+        beforeIndex: context.firstVisibleRegistryIndexBefore
+      });
+      const attempt = await tryBackfillSingleAnchorCandidate(candidate, context, "relaxed");
+      if (attempt.cancelled) {
+        result.cancelled = true;
+        result.cancelReason = attempt.cancelReason;
+        return result;
+      }
+      if (!attempt.scanMetrics) {
+        result.failureReason = attempt.failureReason || "anchor-scroll-not-supported";
+        continue;
+      }
+
+      const anchorWorked = !!attempt.worked;
+      const reverseMovement = !!attempt.reverseMovement;
+      const anchorBlacklistedIds = Array.isArray(state.backfill.anchorBlacklistedIds) ? state.backfill.anchorBlacklistedIds.slice() : [];
+      if (!anchorWorked && candidate.messageId && !anchorBlacklistedIds.includes(candidate.messageId)) anchorBlacklistedIds.push(candidate.messageId);
+      const anchorReverseMovementCount = Number(state.backfill.anchorReverseMovementCount || 0) + (reverseMovement ? 1 : 0);
+      const relaxedAnchorAttemptHistory = Array.isArray(state.backfill.relaxedAnchorAttemptHistory) ? state.backfill.relaxedAnchorAttemptHistory.slice(-12) : [];
+      relaxedAnchorAttemptHistory.push(candidate.messageId + ":" + (anchorWorked ? "worked" : reverseMovement ? "reverse" : "no-progress"));
+
+      result.scanCount += 1;
+      result.scannedVisibleCount += Number(attempt.scanMetrics.visibleCount || 0);
+      result.registryCount = attempt.scanMetrics.registryCount;
+      result.anchorBefore = attempt.candidateBefore;
+      result.anchorAfter = attempt.candidateAfter;
+      result.firstVisibleAfter = attempt.firstVisibleAfter;
+      result.firstVisibleRegistryIndexAfter = attempt.firstVisibleRegistryIndexAfter;
+      result.anchorRegistryIndexBefore = attempt.anchorRegistryIndexBefore;
+      result.anchorRegistryIndexAfter = attempt.anchorRegistryIndexAfter;
+      result.failureReason = anchorWorked ? null : attempt.failureReason || "anchor-scroll-no-useful-progress";
+
+      setBackfillStatus("running", {
+        anchorRelaxedCandidateCount: result.relaxedCandidateCount,
+        anchorRelaxedCandidateIds: result.relaxedCandidateIds,
+        relaxedAnchorTriedCount: result.triedCount,
+        relaxedAnchorTriedIds: result.triedIds.slice(),
+        relaxedAnchorWorkedId: anchorWorked ? candidate.messageId : null,
+        anchorStrategy: "relaxed-dom-order",
+        anchorMessageIdBefore: attempt.candidateBefore ? attempt.candidateBefore.messageId : null,
+        anchorMessageIdAfter: attempt.candidateAfter ? attempt.candidateAfter.messageId : null,
+        anchorTopBefore: attempt.candidateBefore ? attempt.candidateBefore.top : null,
+        anchorTopAfter: attempt.candidateAfter ? attempt.candidateAfter.top : null,
+        anchorBottomBefore: attempt.candidateBefore ? attempt.candidateBefore.bottom : null,
+        anchorBottomAfter: attempt.candidateAfter ? attempt.candidateAfter.bottom : null,
+        anchorDelta: attempt.candidateBefore && attempt.candidateAfter ? attempt.candidateAfter.top - attempt.candidateBefore.top : null,
+        firstVisibleDomMessageIdAfter: attempt.firstVisibleAfter ? attempt.firstVisibleAfter.messageId : null,
+        anchorScrollAttempted: true,
+        anchorScrollWorked: anchorWorked,
+        visualAnchorMovedOnly: !!attempt.visualAnchorMovedOnly,
+        visualMoveRejectedAsProgress: !!attempt.visualMoveRejectedAsProgress,
+        anchorRejectedBecauseReverseAfterScroll: reverseMovement,
+        anchorWorkedRequiresBestProgress: true,
+        anchorBlacklistedIds,
+        anchorReverseMovementCount,
+        relaxedAnchorAttemptHistory,
+        lastRejectedAnchorReason: reverseMovement ? "reverse-registry-index" : anchorWorked ? null : "relaxed-no-progress-anchor",
+        reverseMovementDetected: reverseMovement,
+        reverseMovementFromIndex: reverseMovement ? context.firstVisibleRegistryIndexBefore : state.backfill.reverseMovementFromIndex,
+        reverseMovementToIndex: reverseMovement ? attempt.firstVisibleRegistryIndexAfter : state.backfill.reverseMovementToIndex,
+        reverseMovementAnchorId: reverseMovement ? candidate.messageId : state.backfill.reverseMovementAnchorId,
+        reverseMovementStoppedImmediately: reverseMovement
+      });
+
+      if (reverseMovement) {
+        appendBackfillTraceEvent("reverse-movement-detected", "safety-stop", {
+          anchorId: candidate.messageId,
+          beforeIndex: context.firstVisibleRegistryIndexBefore,
+          afterIndex: attempt.firstVisibleRegistryIndexAfter,
+          result: "failed",
+          reason: "unsafe-reverse-anchor-prevented"
+        });
+        result.safetyStop = true;
+        result.failureReason = "unsafe-reverse-anchor-prevented";
+        return result;
+      }
+      if (attempt.visualMoveRejectedAsProgress) {
+        appendBackfillTraceEvent("visual-move-rejected", "reject", {
+          anchorId: candidate.messageId,
+          beforeIndex: context.firstVisibleRegistryIndexBefore,
+          afterIndex: attempt.firstVisibleRegistryIndexAfter,
+          result: "ignored",
+          reason: "visual-move-no-best-progress"
+        });
+      }
+      if (anchorWorked) {
+        result.worked = true;
+        result.workedId = candidate.messageId;
+        appendBackfillTraceEvent("best-progress", "relaxed-anchor", {
+          anchorId: candidate.messageId,
+          beforeIndex: context.firstVisibleRegistryIndexBefore,
+          afterIndex: attempt.firstVisibleRegistryIndexAfter,
+          result: "worked",
+          reason: attempt.usefulProgressReason || "useful-progress"
+        });
+        return result;
+      }
+    }
+
+    result.failureReason = "all-relaxed-anchor-scroll-no-movement";
+    return result;
+  }
+
+  async function tryBackfillWheelPageFallback(context) {
+    const result = {
+      worked: false,
+      cancelled: false,
+      cancelReason: null,
+      scanCount: 0,
+      scannedVisibleCount: 0,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      attemptCount: 0,
+      lastDeltaY: -900,
+      targetDescriptor: null,
+      pageUpAttempted: false,
+      pageUpWorked: false,
+      progressReason: null,
+      signatureBefore: null,
+      signatureAfter: null
+    };
+    if (!BACKFILL_ENABLE_WHEEL_FALLBACK) {
+      result.progressReason = "disabled-for-stability";
+      setBackfillStatus(state.backfill.status || "running", {
+        wheelFallbackEnabled: false,
+        wheelFallbackAttempted: false,
+        wheelFallbackSkippedReason: "disabled-for-stability"
+      });
+      return result;
+    }
+    const target = context.scrollTarget || findBackfillScrollTarget() || createBackfillScrollTarget(document.scrollingElement || document.documentElement || document.body, "document-fallback");
+    const targetNode = target && target.isDocument ? window : target && target.node ? target.node : window;
+    result.targetDescriptor = target ? describeBackfillScrollTarget(target) || "window" : "window";
+    const beforeMetrics = getBackfillViewportMetrics("wheel");
+    result.signatureBefore = beforeMetrics.viewportSignature;
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      if (!isBackfillStillCurrent(context.runId, context.conversationId)) {
+        result.cancelled = true;
+        result.cancelReason = state.backfill && state.backfill.cancelRequested ? (state.backfill.lastError || "cancelled") :
+          getConversationId() !== context.conversationId ? "conversation-changed" : "run-replaced";
+        return result;
+      }
+
+      const deltaY = -900 - attempt * 250;
+      result.lastDeltaY = deltaY;
+      result.attemptCount += 1;
+      markProgrammaticScroll();
+      try {
+        const wheelEvent = new WheelEvent("wheel", { deltaY, deltaMode: 0, bubbles: true, cancelable: true });
+        if (targetNode && targetNode.dispatchEvent) targetNode.dispatchEvent(wheelEvent);
+        window.dispatchEvent(new WheelEvent("wheel", { deltaY, deltaMode: 0, bubbles: true, cancelable: true }));
+      } catch (error) {
+        debugLog("warn", "backfill wheel fallback dispatch failed", { message: error && error.message ? error.message : String(error) });
+      }
+
+      await waitForBackfillFrame(900);
+      const scanMetrics = scanMergeSaveBackfillBatch("manual-backfill-wheel");
+      result.scanCount += 1;
+      result.scannedVisibleCount += Number(scanMetrics.visibleCount || 0);
+      result.registryCount = scanMetrics.registryCount;
+      const afterMetrics = getBackfillViewportMetrics("wheel");
+      result.signatureAfter = afterMetrics.viewportSignature;
+      const progressed = Number(afterMetrics.registryCount || 0) > Number(beforeMetrics.registryCount || 0) ||
+        afterMetrics.firstVisibleDomMessageId !== beforeMetrics.firstVisibleDomMessageId ||
+        afterMetrics.firstVisibleRegistryIndex < beforeMetrics.firstVisibleRegistryIndex ||
+        afterMetrics.visibleDomUserMessageCount !== beforeMetrics.visibleDomUserMessageCount ||
+        afterMetrics.messageHash !== beforeMetrics.messageHash;
+      if (progressed) {
+        result.worked = true;
+        result.progressReason = "wheel-progress";
+        return result;
+      }
+    }
+
+    result.pageUpAttempted = true;
+    try {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "PageUp", code: "PageUp", bubbles: true, cancelable: true }));
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "PageUp", code: "PageUp", bubbles: true, cancelable: true }));
+    } catch (error) {
+      debugLog("warn", "backfill pageUp fallback dispatch failed", { message: error && error.message ? error.message : String(error) });
+    }
+    await waitForBackfillFrame(900);
+    const pageScanMetrics = scanMergeSaveBackfillBatch("manual-backfill-pageup");
+    result.scanCount += 1;
+    result.scannedVisibleCount += Number(pageScanMetrics.visibleCount || 0);
+    result.registryCount = pageScanMetrics.registryCount;
+    const pageAfterMetrics = getBackfillViewportMetrics("pageup");
+    result.signatureAfter = pageAfterMetrics.viewportSignature;
+    result.pageUpWorked = Number(pageAfterMetrics.registryCount || 0) > Number(beforeMetrics.registryCount || 0) ||
+      pageAfterMetrics.firstVisibleDomMessageId !== beforeMetrics.firstVisibleDomMessageId ||
+      pageAfterMetrics.firstVisibleRegistryIndex < beforeMetrics.firstVisibleRegistryIndex ||
+      pageAfterMetrics.visibleDomUserMessageCount !== beforeMetrics.visibleDomUserMessageCount ||
+      pageAfterMetrics.messageHash !== beforeMetrics.messageHash;
+    result.worked = result.pageUpWorked;
+    result.progressReason = result.pageUpWorked ? "pageup-progress" : "all-anchor-and-wheel-no-movement";
+    return result;
+  }
+
+  function isBackfillAtKnownFirstMessage() {
+    const firstVisible = document.querySelector(USER_SELECTOR);
+    const firstVisibleId = firstVisible && firstVisible.getAttribute("data-message-id");
+    return !!(firstVisibleId && state.messageOrder && state.messageOrder[0] && firstVisibleId === state.messageOrder[0]);
+  }
+
+  function isBackfillStillCurrent(runId, conversationId) {
+    return !!(
+      state.backfill &&
+      state.backfill.runId === runId &&
+      state.backfill.cancelRequested !== true &&
+      getConversationId() === conversationId
+    );
+  }
+
+  function getBackfillStopReason(previousScrollTop, currentScrollTop, attemptsWithoutMovement, hasScrolled) {
+    if (currentScrollTop <= 0) return hasScrolled || isBackfillAtKnownFirstMessage() ? "reached-dom-top" : "scroll-target-at-zero";
+    if (attemptsWithoutMovement >= 3) return "no-scroll-movement";
+    if (state.backfill && Number(state.backfill.batchCount || 0) >= 250) return "max-batch-guard";
+    return null;
+  }
+
+  function scanMergeSaveBackfillBatch(reason) {
+    const shouldRender = scanMessages(reason || "manual-backfill", true);
+    return {
+      shouldRender,
+      visibleCount: document.querySelectorAll(USER_SELECTOR).length,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0
+    };
+  }
+
+  function cancelCurrentConversationBackfill(reason) {
+    const status = state.backfill && state.backfill.status;
+    if (status !== "running") {
+      scheduleDebugPanelRefresh(true);
+      return state.backfill;
+    }
+    return setBackfillStatus("cancelling", {
+      cancelRequested: true,
+      lastError: reason || "cancelled"
+    });
+  }
+
+  function startCurrentConversationBackfill() {
+    const status = state.backfill && state.backfill.status;
+    if (status === "running" || status === "cancelling") return state.backfill;
+
+    const conversationId = getConversationId() || state.currentConversationId;
+    const runId = "backfill-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+
+    resetBackfillState("start-current-conversation-backfill");
+    const hydrationAuditBefore = getBackfillHydrationAuditSnapshot("before");
+    setBackfillStatus("running", {
+      runId,
+      cancelRequested: false,
+      startedAt: new Date().toISOString(),
+      finishedAt: null,
+      lastError: null,
+      batchCount: 0,
+      scannedVisibleCount: 0,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      direction: "up",
+      hydrationAuditBefore
+    });
+    appendBackfillTraceEvent("hydration-audit-before", "capture", {
+      beforeIndex: hydrationAuditBefore.firstVisibleDomRegistryIndex,
+      result: "captured",
+      reason: "run-start"
+    });
+    appendBackfillTraceEvent("run-start", "start", {
+      result: "running",
+      reason: "manual-debug"
+    });
+    setupBackfillUserInterruptGuard(runId);
+
+    runCurrentConversationBackfillLoop(runId, conversationId).catch((error) => {
+      if (state.backfill && state.backfill.runId === runId) {
+        setBackfillStatus("failed", {
+          finishedAt: new Date().toISOString(),
+          lastError: error && error.message ? error.message : "backfill-error"
+        });
+      }
+    });
+
+    return state.backfill;
+  }
+
+  async function runCurrentConversationBackfillLoop(runId, conversationId) {
+    const maxBatchCount = 250;
+    const maxDurationMs = 90000;
+    const noProgressRoundLimit = 6;
+    const topProbeMax = 6;
+    const minimumMovementPx = 8;
+    const waitMs = 500;
+    const startedAtMs = Date.now();
+
+    try {
+      await waitForBackfillFrame(200);
+      if (!isBackfillStillCurrent(runId, conversationId)) {
+        if (state.backfill && state.backfill.runId === runId) {
+          setBackfillStatus("cancelled", {
+            cancelRequested: true,
+            finishedAt: new Date().toISOString(),
+            lastError: state.backfill.lastError || "cancelled",
+            lastStopReason: state.backfill.lastError || "cancelled"
+          });
+        }
+        return;
+      }
+
+      const scrollTarget = findBackfillScrollTarget();
+
+      let attemptsWithoutMovement = 0;
+      setBackfillStatus("running", {
+        scrollTargetDescriptor: scrollTarget ? describeBackfillScrollTarget(scrollTarget) : null,
+        ...(scrollTarget ? getBackfillScrollMetrics(scrollTarget) : {}),
+        noProgressRoundLimit,
+        topProbeMax,
+        completionConfidence: null
+      });
+
+      while (true) {
+        if (!isBackfillStillCurrent(runId, conversationId)) {
+          const reason = state.backfill && state.backfill.cancelRequested ? (state.backfill.lastError || "cancelled") :
+            getConversationId() !== conversationId ? "conversation-changed" : "run-replaced";
+          if (state.backfill && state.backfill.runId === runId) {
+            setBackfillStatus("cancelled", {
+              cancelRequested: true,
+              finishedAt: new Date().toISOString(),
+              lastError: reason,
+              lastStopReason: reason
+            });
+          }
+          return;
+        }
+
+        if (Date.now() - startedAtMs >= maxDurationMs) {
+          setBackfillStatus("failed", {
+            finishedAt: new Date().toISOString(),
+            lastError: "max-duration-reached",
+            lastStopReason: "max-duration-reached",
+            completionConfidence: "emergency-guard"
+          });
+          return;
+        }
+
+        const batchStartedAt = new Date().toISOString();
+        const metrics = scanMergeSaveBackfillBatch("manual-backfill");
+        const batchFinishedAt = new Date().toISOString();
+        const batchCount = Number(state.backfill.batchCount || 0) + 1;
+        const scannedVisibleCount = Number(state.backfill.scannedVisibleCount || 0) + Number(metrics.visibleCount || 0);
+        const firstRegistryMessageId = state.messageOrder && state.messageOrder[0] ? state.messageOrder[0] : null;
+        const anchorBefore = getFirstVisibleBackfillMessageAnchor();
+        const anchorBeforeMetrics = getBackfillMessageAnchorMetrics(anchorBefore);
+        const currentViewport = getBackfillViewportMetrics(anchorBeforeMetrics && anchorBeforeMetrics.messageId);
+        const progressState = recordBackfillProgress(currentViewport, {});
+        appendBackfillTraceEvent("batch-scan", "scan", {
+          anchorId: anchorBeforeMetrics ? anchorBeforeMetrics.messageId : null,
+          beforeIndex: currentViewport.firstVisibleRegistryIndex,
+          afterIndex: currentViewport.firstVisibleRegistryIndex,
+          result: progressState.progress ? "progress" : "no-progress",
+          reason: progressState.reasons && progressState.reasons.length ? progressState.reasons.join(",") : "scan"
+        });
+        setBackfillStatus("running", {
+          batchCount,
+          scannedVisibleCount,
+          registryCount: metrics.registryCount,
+          lastBatchStartedAt: batchStartedAt,
+          lastBatchFinishedAt: batchFinishedAt,
+          firstVisibleDomMessageIdBefore: anchorBeforeMetrics ? anchorBeforeMetrics.messageId : null,
+          firstRegistryMessageIdAtBackfill: firstRegistryMessageId,
+          firstVisibleRegistryIndexBefore: currentViewport.firstVisibleRegistryIndex,
+          firstVisibleRegistryIndexAfter: currentViewport.firstVisibleRegistryIndex,
+          topProbeActive: false
+        });
+
+        if (progressState.oscillationDetected) {
+          setBackfillStatus("failed", {
+            finishedAt: new Date().toISOString(),
+            lastError: "oscillation-detected",
+            lastStopReason: "oscillation-detected",
+            completionConfidence: "oscillation"
+          });
+          return;
+        }
+
+        if (batchCount >= maxBatchCount) {
+          setBackfillStatus("failed", {
+            finishedAt: new Date().toISOString(),
+            lastError: "max-batch-guard",
+            lastStopReason: "max-batch-guard",
+            completionConfidence: "emergency-guard"
+          });
+          return;
+        }
+
+        if (currentViewport.firstVisibleRegistryIndex === 0) {
+          const nextTopProbeCount = Number(state.backfill.topProbeCount || 0) + 1;
+          if (nextTopProbeCount > topProbeMax) {
+            setBackfillStatus("completed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "completed-known-start-stable",
+              lastStopReason: "completed-known-start-stable",
+              scrollMethod: "top-probe",
+              topProbeActive: false,
+              topProbeCount: topProbeMax,
+              completionConfidence: "known-start-stable"
+            });
+            return;
+          }
+
+          setBackfillStatus("running", {
+            scrollMethod: "top-probe",
+            topProbeActive: true,
+            topProbeCount: nextTopProbeCount,
+            topHydrationProbeAttempted: true,
+            topHydrationProbeCount: nextTopProbeCount,
+            lastStopReason: "reached-registry-start",
+            completionConfidence: "known-start-probing"
+          });
+
+          appendBackfillTraceEvent("top-probe", "try", {
+            beforeIndex: currentViewport.firstVisibleRegistryIndex,
+            reason: "known-registry-start"
+          });
+          const topProbe = await tryBackfillTopHydrationProbe({ beforeMetrics: currentViewport });
+          if (!isBackfillStillCurrent(runId, conversationId)) {
+            const reason = state.backfill && state.backfill.cancelRequested ? (state.backfill.lastError || "cancelled") :
+              getConversationId() !== conversationId ? "conversation-changed" : "run-replaced";
+            if (state.backfill && state.backfill.runId === runId) {
+              setBackfillStatus("cancelled", {
+                cancelRequested: true,
+                finishedAt: new Date().toISOString(),
+                lastError: reason,
+                lastStopReason: reason
+              });
+            }
+            return;
+          }
+
+          const topProbeProgress = recordBackfillProgress(topProbe.after, {});
+          const topProbeBatchCount = Number(state.backfill.batchCount || 0) + 1;
+          const topProbeScannedVisibleCount = Number(state.backfill.scannedVisibleCount || 0) + Number(topProbe.scanMetrics.visibleCount || 0);
+          setBackfillStatus("running", {
+            batchCount: topProbeBatchCount,
+            scannedVisibleCount: topProbeScannedVisibleCount,
+            registryCount: topProbe.scanMetrics.registryCount,
+            topProbeActive: false,
+            topProbeCount: nextTopProbeCount,
+            topHydrationProbeAttempted: true,
+            topHydrationProbeCount: nextTopProbeCount,
+            topHydrationProbeWorked: topProbe.hydratedEarlier || topProbeProgress.progress,
+            topHydrationProbeReason: topProbe.reason,
+            topHydrationProbeRegistryCountBefore: topProbe.before.registryCount,
+            topHydrationProbeRegistryCountAfter: topProbe.after.registryCount,
+            topHydrationProbeFirstRegistryBefore: topProbe.before.firstRegistryMessageId,
+            topHydrationProbeFirstRegistryAfter: topProbe.after.firstRegistryMessageId,
+            topHydrationProbeFirstVisibleIndexBefore: topProbe.before.firstVisibleRegistryIndex,
+            topHydrationProbeFirstVisibleIndexAfter: topProbe.after.firstVisibleRegistryIndex,
+            visualScrollObservedButNoHydration: !!topProbe.visualOnly,
+            scrollMetricTrustedAsSuccess: false,
+            firstVisibleDomMessageIdAfter: topProbe.after.firstVisibleDomMessageId,
+            firstVisibleRegistryIndexAfter: topProbe.after.firstVisibleRegistryIndex,
+            lastScrollWorked: topProbe.hydratedEarlier || topProbeProgress.progress,
+            lastStopReason: topProbe.hydratedEarlier || topProbeProgress.progress ? "top-probe-progress" : "reached-registry-start",
+            completionConfidence: "known-start-probing"
+          });
+
+          if (topProbe.unsafeReverse) {
+            setBackfillStatus("failed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "unsafe-reverse-hydration-probe",
+              lastStopReason: "unsafe-reverse-hydration-probe",
+              topProbeActive: false,
+              reverseMovementDetected: true,
+              reverseMovementFromIndex: topProbe.before.firstVisibleRegistryIndex,
+              reverseMovementToIndex: topProbe.after.firstVisibleRegistryIndex,
+              reverseMovementAnchorId: topProbe.anchorId,
+              reverseMovementStoppedImmediately: true,
+              completionConfidence: "safety-stop"
+            });
+            appendBackfillTraceEvent("safety-stop", "top-probe", {
+              anchorId: topProbe.anchorId,
+              beforeIndex: topProbe.before.firstVisibleRegistryIndex,
+              afterIndex: topProbe.after.firstVisibleRegistryIndex,
+              result: "failed",
+              reason: "unsafe-reverse-hydration-probe"
+            });
+            return;
+          }
+
+          if (topProbeProgress.oscillationDetected) {
+            setBackfillStatus("failed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "oscillation-detected",
+              lastStopReason: "oscillation-detected",
+              topProbeActive: false,
+              completionConfidence: "oscillation"
+            });
+            return;
+          }
+
+          if (topProbe.hydratedEarlier || topProbeProgress.progress) continue;
+          if (nextTopProbeCount >= topProbeMax) {
+            setBackfillStatus("completed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "completed-known-start-stable",
+              lastStopReason: "completed-known-start-stable",
+              topProbeActive: false,
+              completionConfidence: "known-start-stable"
+            });
+            return;
+          }
+          if (topProbeProgress.noProgressRoundCount >= noProgressRoundLimit) {
+            setBackfillStatus("completed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "completed-known-start-stable",
+              lastStopReason: "completed-known-start-stable",
+              topProbeActive: false,
+              completionConfidence: "known-start-stable"
+            });
+            return;
+          }
+          continue;
+        }
+
+        let traditionalWorked = false;
+        let before = null;
+        let after = null;
+        let scrollAttemptAt = new Date().toISOString();
+
+        if (scrollTarget) {
+          before = getBackfillScrollMetrics(scrollTarget);
+          const delta = Math.max(240, (before.clientHeight || window.innerHeight || 800) * 0.85);
+          scrollBackfillTargetUp(scrollTarget, delta);
+
+          await waitForBackfillFrame(waitMs);
+
+          after = getBackfillScrollMetrics(scrollTarget);
+          const moved = Math.abs(after.scrollTop - before.scrollTop);
+          traditionalWorked = moved >= minimumMovementPx;
+          attemptsWithoutMovement = traditionalWorked ? 0 : attemptsWithoutMovement + 1;
+          setBackfillStatus("running", {
+            scrollMethod: traditionalWorked ? "traditional" : "traditional-no-movement",
+            scrollTargetDescriptor: describeBackfillScrollTarget(scrollTarget),
+            scrollTopBefore: before.scrollTop,
+            scrollTopAfter: after.scrollTop,
+            scrollDelta: after.scrollTop - before.scrollTop,
+            scrollHeight: after.scrollHeight,
+            clientHeight: after.clientHeight,
+            windowScrollYBefore: before.windowScrollY,
+            windowScrollYAfter: after.windowScrollY,
+            lastScrollAttemptAt: scrollAttemptAt,
+            lastScrollWorked: traditionalWorked,
+            lastStopReason: traditionalWorked ? null : "traditional-no-movement"
+          });
+        } else {
+          attemptsWithoutMovement += 1;
+          setBackfillStatus("running", {
+            scrollMethod: "anchor",
+            lastScrollAttemptAt: scrollAttemptAt,
+            lastScrollWorked: false,
+            lastStopReason: "no-scroll-container"
+          });
+        }
+
+        if (traditionalWorked) {
+          const traditionalViewport = getBackfillViewportMetrics(anchorBeforeMetrics && anchorBeforeMetrics.messageId);
+          const traditionalProgress = recordBackfillProgress(traditionalViewport, {
+            anchorDelta: after && before ? after.scrollTop - before.scrollTop : null
+          });
+          if (traditionalProgress.oscillationDetected) {
+            setBackfillStatus("failed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "oscillation-detected",
+              lastStopReason: "oscillation-detected",
+              completionConfidence: "oscillation"
+            });
+            return;
+          }
+          if (traditionalProgress.noProgressRoundCount >= noProgressRoundLimit) {
+            setBackfillStatus("failed", {
+              finishedAt: new Date().toISOString(),
+              lastError: "stalled-no-progress",
+              lastStopReason: "stalled-no-progress",
+              completionConfidence: "stalled"
+            });
+            return;
+          }
+          continue;
+        }
+
+        scrollAttemptAt = new Date().toISOString();
+        const anchorCandidates = getBackfillMessageAnchorCandidates();
+        const firstVisibleRegistryIndexBefore = getRegistryOrderIndex(anchorBeforeMetrics && anchorBeforeMetrics.messageId);
+        const anchorResult = await tryBackfillAnchorCandidates(anchorCandidates, {
+          runId,
+          conversationId,
+          firstVisibleIdBefore: anchorBeforeMetrics ? anchorBeforeMetrics.messageId : null,
+          firstVisibleRegistryIndexBefore,
+          currentFirstVisibleRegistryIndex: firstVisibleRegistryIndexBefore,
+          registryCountBefore: metrics.registryCount,
+          visibleDomUserMessageCountBefore: currentViewport.visibleDomUserMessageCount,
+          messageHashBefore: currentViewport.messageHash
+        });
+
+        if (anchorResult.cancelled) {
+          if (state.backfill && state.backfill.runId === runId) {
+            setBackfillStatus("cancelled", {
+              cancelRequested: true,
+              finishedAt: new Date().toISOString(),
+              lastError: anchorResult.cancelReason || "cancelled",
+              lastStopReason: anchorResult.cancelReason || "cancelled"
+            });
+          }
+          return;
+        }
+
+        let activeAnchorResult = anchorResult;
+        let relaxedResult = null;
+        let wheelResult = null;
+        if (!activeAnchorResult.worked && !activeAnchorResult.safetyStop) {
+          relaxedResult = await tryBackfillRelaxedAnchorCandidates(anchorCandidates, {
+            runId,
+            conversationId,
+            firstVisibleIdBefore: anchorBeforeMetrics ? anchorBeforeMetrics.messageId : null,
+            firstVisibleRegistryIndexBefore,
+            currentFirstVisibleRegistryIndex: firstVisibleRegistryIndexBefore,
+            registryCountBefore: metrics.registryCount,
+            visibleDomUserMessageCountBefore: currentViewport.visibleDomUserMessageCount,
+            messageHashBefore: currentViewport.messageHash,
+            triedIds: anchorResult.triedIds || []
+          });
+          if (relaxedResult.cancelled) {
+            if (state.backfill && state.backfill.runId === runId) {
+              setBackfillStatus("cancelled", {
+                cancelRequested: true,
+                finishedAt: new Date().toISOString(),
+                lastError: relaxedResult.cancelReason || "cancelled",
+                lastStopReason: relaxedResult.cancelReason || "cancelled"
+              });
+            }
+            return;
+          }
+          if (relaxedResult.worked) activeAnchorResult = relaxedResult;
+          if (relaxedResult.safetyStop) activeAnchorResult = relaxedResult;
+        }
+
+        if (!activeAnchorResult.worked && !activeAnchorResult.safetyStop && BACKFILL_ENABLE_WHEEL_FALLBACK) {
+          wheelResult = await tryBackfillWheelPageFallback({
+            runId,
+            conversationId,
+            scrollTarget,
+            firstVisibleIdBefore: anchorBeforeMetrics ? anchorBeforeMetrics.messageId : null,
+            firstVisibleRegistryIndexBefore,
+            registryCountBefore: metrics.registryCount
+          });
+          if (wheelResult.cancelled) {
+            if (state.backfill && state.backfill.runId === runId) {
+              setBackfillStatus("cancelled", {
+                cancelRequested: true,
+                finishedAt: new Date().toISOString(),
+                lastError: wheelResult.cancelReason || "cancelled",
+                lastStopReason: wheelResult.cancelReason || "cancelled"
+              });
+            }
+            return;
+          }
+        } else if (!activeAnchorResult.worked && !activeAnchorResult.safetyStop) {
+          setBackfillStatus("running", {
+            wheelFallbackEnabled: false,
+            wheelFallbackAttempted: false,
+            wheelFallbackSkippedReason: "disabled-for-stability"
+          });
+        }
+
+        const fallbackWorked = !!(activeAnchorResult.worked || (wheelResult && wheelResult.worked));
+        const totalScanCount = Number(anchorResult.scanCount || 0) +
+          Number(relaxedResult && relaxedResult.scanCount || 0) +
+          Number(wheelResult && wheelResult.scanCount || 0);
+        const totalScannedVisibleCount = Number(anchorResult.scannedVisibleCount || 0) +
+          Number(relaxedResult && relaxedResult.scannedVisibleCount || 0) +
+          Number(wheelResult && wheelResult.scannedVisibleCount || 0);
+        const latestRegistryCount = wheelResult ? wheelResult.registryCount :
+          relaxedResult ? relaxedResult.registryCount : anchorResult.registryCount;
+        const finalAnchorReason = activeAnchorResult.safetyStop ? "unsafe-reverse-anchor-prevented" : fallbackWorked ? null :
+          wheelResult ? "all-anchor-and-wheel-no-movement" : (relaxedResult && relaxedResult.failureReason) || anchorResult.failureReason || "all-anchor-scroll-no-movement";
+        attemptsWithoutMovement = fallbackWorked ? 0 : attemptsWithoutMovement + 1;
+        const fallbackProgress = recordBackfillProgress(getBackfillViewportMetrics(activeAnchorResult.workedId || "fallback"), {
+          anchorDelta: activeAnchorResult.anchorBefore && activeAnchorResult.anchorAfter ?
+            activeAnchorResult.anchorAfter.top - activeAnchorResult.anchorBefore.top : null
+        });
+        const anchorBatchCount = Number(state.backfill.batchCount || 0) + totalScanCount;
+        const anchorScannedVisibleCount = Number(state.backfill.scannedVisibleCount || 0) + totalScannedVisibleCount;
+
+        setBackfillStatus(fallbackWorked ? "running" : "failed", {
+          batchCount: anchorBatchCount,
+          scannedVisibleCount: anchorScannedVisibleCount,
+          registryCount: latestRegistryCount,
+          finishedAt: fallbackWorked ? null : new Date().toISOString(),
+          lastError: finalAnchorReason,
+          lastStopReason: finalAnchorReason,
+          scrollMethod: scrollTarget ? "mixed" : "anchor",
+          scrollTargetDescriptor: scrollTarget ? describeBackfillScrollTarget(scrollTarget) : null,
+          scrollTopBefore: before ? before.scrollTop : null,
+          scrollTopAfter: after ? after.scrollTop : null,
+          scrollDelta: before && after ? after.scrollTop - before.scrollTop : null,
+          scrollHeight: after ? after.scrollHeight : before ? before.scrollHeight : null,
+          clientHeight: after ? after.clientHeight : before ? before.clientHeight : null,
+          windowScrollYBefore: before ? before.windowScrollY : window.scrollY || 0,
+          windowScrollYAfter: after ? after.windowScrollY : window.scrollY || 0,
+          lastScrollAttemptAt: scrollAttemptAt,
+          lastScrollWorked: fallbackWorked,
+          anchorMessageIdBefore: activeAnchorResult.anchorBefore ? activeAnchorResult.anchorBefore.messageId : null,
+          anchorMessageIdAfter: activeAnchorResult.anchorAfter ? activeAnchorResult.anchorAfter.messageId : null,
+          anchorTopBefore: activeAnchorResult.anchorBefore ? activeAnchorResult.anchorBefore.top : null,
+          anchorTopAfter: activeAnchorResult.anchorAfter ? activeAnchorResult.anchorAfter.top : null,
+          anchorBottomBefore: activeAnchorResult.anchorBefore ? activeAnchorResult.anchorBefore.bottom : null,
+          anchorBottomAfter: activeAnchorResult.anchorAfter ? activeAnchorResult.anchorAfter.bottom : null,
+          anchorDelta: activeAnchorResult.anchorBefore && activeAnchorResult.anchorAfter ? activeAnchorResult.anchorAfter.top - activeAnchorResult.anchorBefore.top : null,
+          firstVisibleDomMessageIdBefore: anchorBeforeMetrics ? anchorBeforeMetrics.messageId : null,
+          firstVisibleDomMessageIdAfter: activeAnchorResult.firstVisibleAfter ? activeAnchorResult.firstVisibleAfter.messageId : null,
+          firstRegistryMessageIdAtBackfill: firstRegistryMessageId,
+          anchorScrollAttempted: true,
+          anchorScrollWorked: !!activeAnchorResult.worked,
+          anchorCandidateCount: anchorResult.candidateCount,
+          anchorCandidateTriedCount: anchorResult.triedCount,
+          anchorCandidateIds: anchorResult.candidateIds,
+          anchorRawCandidateCount: anchorResult.rawCandidateCount,
+          anchorRankedCandidateCount: anchorResult.rankedCandidateCount,
+          anchorRelaxedCandidateCount: relaxedResult ? relaxedResult.relaxedCandidateCount : 0,
+          anchorRawCandidateIds: anchorResult.rawCandidateIds,
+          anchorRankedCandidateIds: anchorResult.rankedCandidateIds,
+          anchorRelaxedCandidateIds: relaxedResult ? relaxedResult.relaxedCandidateIds : [],
+          anchorRejectedCandidateCount: anchorResult.rejectedCandidateCount,
+          anchorRejectedReasons: anchorResult.rejectedReasons,
+          anchorTriedIds: anchorResult.triedIds,
+          relaxedAnchorTriedCount: relaxedResult ? relaxedResult.triedCount : 0,
+          relaxedAnchorTriedIds: relaxedResult ? relaxedResult.triedIds : [],
+          relaxedAnchorWorkedId: relaxedResult ? relaxedResult.workedId : null,
+          anchorWorkedId: activeAnchorResult.workedId,
+          anchorFailureReason: finalAnchorReason,
+          anchorStrategy: activeAnchorResult === anchorResult ? "registry-nearest-multi" : wheelResult && wheelResult.worked ? "wheel-page-fallback" : "relaxed-dom-order",
+          anchorRegistryIndexBefore: activeAnchorResult.anchorRegistryIndexBefore,
+          anchorRegistryIndexAfter: activeAnchorResult.anchorRegistryIndexAfter,
+          firstVisibleRegistryIndexBefore,
+          firstVisibleRegistryIndexAfter: activeAnchorResult.firstVisibleRegistryIndexAfter,
+          wheelFallbackAttempted: !!wheelResult,
+          wheelFallbackAttemptCount: wheelResult ? wheelResult.attemptCount : 0,
+          wheelFallbackWorked: !!(wheelResult && wheelResult.worked),
+          wheelFallbackLastDeltaY: wheelResult ? wheelResult.lastDeltaY : null,
+          wheelFallbackTargetDescriptor: wheelResult ? wheelResult.targetDescriptor : null,
+          pageUpFallbackAttempted: !!(wheelResult && wheelResult.pageUpAttempted),
+          pageUpFallbackWorked: !!(wheelResult && wheelResult.pageUpWorked),
+          fallbackProgressReason: wheelResult ? wheelResult.progressReason : fallbackWorked ? "anchor-progress" : finalAnchorReason,
+          wheelFallbackSignatureBefore: wheelResult ? wheelResult.signatureBefore : null,
+          wheelFallbackSignatureAfter: wheelResult ? wheelResult.signatureAfter : null,
+          reverseMovementDetected: !!activeAnchorResult.safetyStop || !!state.backfill.reverseMovementDetected,
+          reverseMovementStoppedImmediately: !!activeAnchorResult.safetyStop || !!state.backfill.reverseMovementStoppedImmediately,
+          completionConfidence: activeAnchorResult.safetyStop ? "safety-stop" : fallbackWorked ? null : wheelResult ? "anchor-wheel-stalled" : "anchor-stalled"
+        });
+
+        if (fallbackProgress.oscillationDetected) {
+          setBackfillStatus("failed", {
+            finishedAt: new Date().toISOString(),
+            lastError: "oscillation-detected",
+            lastStopReason: "oscillation-detected",
+            completionConfidence: "oscillation"
+          });
+          return;
+        }
+        if (activeAnchorResult.safetyStop) {
+          appendBackfillTraceEvent("safety-stop", "run-failed", {
+            beforeIndex: firstVisibleRegistryIndexBefore,
+            afterIndex: activeAnchorResult.firstVisibleRegistryIndexAfter,
+            result: "failed",
+            reason: "unsafe-reverse-anchor-prevented"
+          });
+          return;
+        }
+        if (!fallbackWorked) return;
+        if (fallbackProgress.noProgressRoundCount >= noProgressRoundLimit) {
+          setBackfillStatus("failed", {
+            finishedAt: new Date().toISOString(),
+            lastError: "stalled-no-progress",
+            lastStopReason: "stalled-no-progress",
+            completionConfidence: "stalled"
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      if (state.backfill && state.backfill.runId === runId) {
+        setBackfillStatus("failed", {
+          finishedAt: new Date().toISOString(),
+          lastError: error && error.message ? error.message : "backfill-error",
+          lastStopReason: error && error.message ? error.message : "backfill-error"
+        });
+      }
+    }
   }
 
   function t(key, params) {
@@ -8070,6 +10237,7 @@
         cachedMessageClickMissingDomCount: DEBUG_STATE.cachedMessageClickMissingDomCount
       },
       backfillSummary: getBackfillProgressSnapshot(),
+      hydrationAuditSummary: getBackfillProgressSnapshot().hydrationAuditSummary,
       conversationSwitchSummary: {
         switchCount: DEBUG_STATE.conversationSwitchCount,
         lastConversationId: DEBUG_STATE.lastConversationId,
@@ -8332,8 +10500,34 @@
       printDebugInfo();
     });
 
+    const backfillStatus = state.backfill && state.backfill.status;
+    const backfillRunning = backfillStatus === "running" || backfillStatus === "cancelling";
+    const backfill = document.createElement("button");
+    backfill.type = "button";
+    backfill.className = "gpn-mini-btn";
+    backfill.textContent = "Backfill Current Conversation";
+    backfill.disabled = backfillRunning;
+    backfill.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      startCurrentConversationBackfill();
+    });
+
+    const cancelBackfill = document.createElement("button");
+    cancelBackfill.type = "button";
+    cancelBackfill.className = "gpn-mini-btn";
+    cancelBackfill.textContent = "Cancel Backfill";
+    cancelBackfill.disabled = backfillStatus !== "running";
+    cancelBackfill.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      cancelCurrentConversationBackfill("user-cancel");
+    });
+
     actions.appendChild(copy);
     actions.appendChild(print);
+    actions.appendChild(backfill);
+    actions.appendChild(cancelBackfill);
 
     const pre = document.createElement("pre");
     pre.className = "gpn-debug-pre";
