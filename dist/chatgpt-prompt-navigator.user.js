@@ -23,6 +23,25 @@
   const MUTATION_LOG_INTERVAL_MS = 3000;
   const DEBUG_PANEL_REFRESH_MS = 1000;
   const BACKFILL_ENABLE_WHEEL_FALLBACK = false;
+  const KNOWN_GAP_NATIVE_PROBE_SCROLL_AMOUNTS = [480, 720, 960, 1200, 1600];
+  const KNOWN_GAP_NATIVE_PROBE_MAX = 5;
+  const KNOWN_GAP_NATIVE_PROBE_MAX_STEPS = 3;
+  const KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD = 200;
+  const KNOWN_GAP_PROBE_TRUE_TOP_EPSILON = 5;
+  const KNOWN_GAP_PROBE_STRATEGY = "continuous-upward-hydration-drive";
+  const KNOWN_GAP_PROBE_MAX_TOTAL_MS = 240000;
+  const KNOWN_GAP_PROBE_SOFT_STATUS_UPDATE_MS = 5000;
+  const KNOWN_GAP_PROBE_MAX_TOTAL_STEPS = 400;
+  const KNOWN_GAP_PROBE_MAX_HYDRATION_CYCLES = 80;
+  const KNOWN_GAP_PROBE_STEP_WAIT_MS = 220;
+  const KNOWN_GAP_PROBE_POST_SCROLL_WAIT_MS = 450;
+  const KNOWN_GAP_PROBE_HYDRATION_WAIT_MS = 1100;
+  const KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS = 2500;
+  const KNOWN_GAP_PROBE_STABLE_TOP_EXTRA_CHECK_MS = 800;
+  const KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED = 3;
+  const KNOWN_GAP_PROBE_TOP_NUDGE_WAIT_MS = 1000;
+  const KNOWN_GAP_PROBE_SCROLLHEIGHT_GROWTH_THRESHOLD = 20;
+  const KNOWN_GAP_PROBE_BUSINESS_AUDIT_THROTTLE_MS = 800;
   const HIGHLIGHT_HOLD_MS = 1200;
   const HIGHLIGHT_FADE_MS = 600;
   const HIGHLIGHT_MS = HIGHLIGHT_HOLD_MS + HIGHLIGHT_FADE_MS;
@@ -919,6 +938,118 @@
       rawAnchorFailureReason: null,
       knownTopGapAtStop: null,
       safeAnchorStalledKnownGap: false,
+      knownGapProbeStatus: "idle",
+      knownGapProbeRunId: null,
+      knownGapProbeIsRunning: false,
+      knownGapProbeCanCopyFinalDebug: true,
+      knownGapProbeAttempted: false,
+      knownGapProbeCount: 0,
+      knownGapProbeMax: KNOWN_GAP_NATIVE_PROBE_MAX,
+      knownGapProbeReason: null,
+      knownGapProbeHumanStatus: null,
+      knownGapProbeStrategy: KNOWN_GAP_PROBE_STRATEGY,
+      knownGapProbeHydrationDetected: false,
+      knownGapProbeVisualOnly: false,
+      knownGapProbeSafetyStopped: false,
+      knownGapProbeRegistryCountBefore: null,
+      knownGapProbeRegistryCountAfter: null,
+      knownGapProbeRegistryDelta: 0,
+      knownGapProbeVisibleDomCountBefore: null,
+      knownGapProbeVisibleDomCountAfter: null,
+      knownGapProbeVisibleDomDelta: 0,
+      knownGapProbeFirstVisibleIndexBefore: null,
+      knownGapProbeFirstVisibleIndexAfter: null,
+      knownGapProbeKnownGapBefore: null,
+      knownGapProbeKnownGapAfter: null,
+      knownGapProbeFirstRegistryBefore: null,
+      knownGapProbeFirstRegistryAfter: null,
+      knownGapProbeBefore: null,
+      knownGapProbeAfter: null,
+      knownGapProbeDelayed: null,
+      knownGapProbeNativeScrollAttempted: false,
+      knownGapProbeNativeScrollWorked: false,
+      knownGapProbeJumpToTopAttempted: false,
+      knownGapProbeJumpToTopWorked: false,
+      knownGapProbeScrollMethod: null,
+      knownGapProbeScrollTargetDescriptor: null,
+      knownGapProbeScrollAmount: null,
+      knownGapProbeInitialScrollTop: null,
+      knownGapProbeFinalScrollTop: null,
+      knownGapProbeInitialScrollHeight: null,
+      knownGapProbeFinalScrollHeight: null,
+      knownGapProbeTotalScrollHeightDelta: 0,
+      knownGapProbeScrollTopBefore: null,
+      knownGapProbeScrollTopAfter: null,
+      knownGapProbeScrollTopAfterImmediate: null,
+      knownGapProbeScrollTopAfterWait: null,
+      knownGapProbeScrollHeightBefore: null,
+      knownGapProbeScrollHeightAfterImmediate: null,
+      knownGapProbeScrollHeightAfterWait: null,
+      knownGapProbeScrollHeightDelta: 0,
+      knownGapProbeClientHeight: null,
+      knownGapProbeReachedTopThreshold: false,
+      knownGapProbeTrueTopEpsilon: KNOWN_GAP_PROBE_TRUE_TOP_EPSILON,
+      knownGapProbeReachedTrueTop: false,
+      knownGapProbeStableAtTop: false,
+      knownGapProbeStableAtTopWaitMs: KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS,
+      knownGapProbeStableTopConfirmationCount: 0,
+      knownGapProbeStableTopConfirmationsRequired: KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED,
+      knownGapProbeStableTopConfirmationLabel: "0/" + KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED,
+      knownGapProbeEstimatedPhase: "idle",
+      knownGapProbeStableTopResetCount: 0,
+      knownGapProbeStableTopResetReason: null,
+      knownGapProbeDomHydrationDriveEnabled: true,
+      knownGapProbeStoppedAfterStableTopConfirmations: false,
+      knownGapProbeTopNudgeCount: 0,
+      knownGapProbeProgressDetected: false,
+      knownGapProbeProgressReason: null,
+      knownGapProbeBestKnownGap: null,
+      knownGapProbeBestFirstVisibleIndex: null,
+      knownGapProbeProgressEventCount: 0,
+      knownGapProbeProgressHistory: [],
+      knownGapProbeReverseIndexObserved: false,
+      knownGapProbeReverseIndexIgnoredInBackfillMode: false,
+      knownGapProbeReverseIndexIgnoredReason: null,
+      knownGapProbePostHydrationSettleNeeded: false,
+      knownGapProbeLastHydrationAt: null,
+      knownGapProbeLastAnchorCompensationAt: null,
+      knownGapProbeMutationCountBeforeStableWait: null,
+      knownGapProbeMutationCountAfterStableWait: null,
+      knownGapProbeMessageHashBeforeStableWait: null,
+      knownGapProbeMessageHashAfterStableWait: null,
+      knownGapProbeScrollHeightIncreased: false,
+      knownGapProbeAnchorCompensatedScrollTop: false,
+      knownGapProbeTopHydrationCycleDetected: false,
+      knownGapProbeHydrationCycleCount: 0,
+      knownGapProbeAnchorCompensationCount: 0,
+      knownGapProbeMaxTotalMs: KNOWN_GAP_PROBE_MAX_TOTAL_MS,
+      knownGapProbeTotalDurationMs: 0,
+      knownGapProbeMaxTotalSteps: KNOWN_GAP_PROBE_MAX_TOTAL_STEPS,
+      knownGapProbeTotalStepCount: 0,
+      knownGapProbeMaxHydrationCycles: KNOWN_GAP_PROBE_MAX_HYDRATION_CYCLES,
+      knownGapProbeStoppedBecauseMaxBudget: false,
+      knownGapProbeBudgetStopPhase: null,
+      knownGapProbeStartUrl: null,
+      knownGapProbeEndUrl: null,
+      knownGapProbeStartConversationId: null,
+      knownGapProbeEndConversationId: null,
+      knownGapProbeStartConversationKey: null,
+      knownGapProbeEndConversationKey: null,
+      knownGapProbeStartUserMessageCount: null,
+      knownGapProbeCancelledByConversationChange: false,
+      knownGapProbeCancelReason: null,
+      knownGapProbeStepCount: 0,
+      knownGapProbeStepHistory: [],
+      knownGapProbeCycleHistory: [],
+      knownGapProbeWaitMsAfterTop: null,
+      knownGapProbeWindowScrollYBefore: null,
+      knownGapProbeWindowScrollYAfter: null,
+      knownGapProbeTargetCandidates: [],
+      knownGapProbeAttemptHistory: [],
+      knownGapProbeEarlierDomAnchorAttempted: false,
+      knownGapProbeEarlierDomAnchorWorked: false,
+      knownGapProbeEarlierDomAnchorCandidateIds: [],
+      knownGapProbeEarlierDomAnchorRejectedIds: [],
       completionConfidence: null
     };
   }
@@ -1018,6 +1149,7 @@
     messageOrder: [],
     backfill: createDefaultBackfillState(),
     backfillInterruptCleanup: null,
+    knownGapProbeInterruptCleanup: null,
     lastMediaHydrationLogAt: 0,
     searchResultActiveIndex: -1
   };
@@ -1034,6 +1166,13 @@
       afterIndex: details.afterIndex,
       bestIndex: state.backfill.bestFirstVisibleRegistryIndex,
       registryCount: state.messageRegistry ? state.messageRegistry.size : Number(state.backfill.registryCount || 0),
+      knownGapBefore: details.knownGapBefore,
+      knownGapAfter: details.knownGapAfter,
+      registryCountBefore: details.registryCountBefore,
+      registryCountAfter: details.registryCountAfter,
+      targetDescriptor: details.targetDescriptor || null,
+      scrollMethod: details.scrollMethod || null,
+      scrollAmount: details.scrollAmount,
       result: details.result || null,
       reason: details.reason || null
     });
@@ -1059,6 +1198,64 @@
     }
     if (backfill.status === "cancelled" || backfill.status === "cancelling") return "Backfill was cancelled.";
     return "Backfill idle.";
+  }
+
+  function getKnownGapProbeStableTopConfirmationLabel(probe = state.backfill) {
+    const required = Number(probe && probe.knownGapProbeStableTopConfirmationsRequired || KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED);
+    const count = Math.max(0, Math.min(required, Number(probe && probe.knownGapProbeStableTopConfirmationCount || 0)));
+    return count + "/" + required;
+  }
+
+  function getKnownGapProbeEstimatedPhase(probe = state.backfill) {
+    if (!probe || !probe.knownGapProbeStatus || probe.knownGapProbeStatus === "idle") return "idle";
+    if (probe.knownGapProbeStatus === "success") return "stable-true-top-confirmed";
+    if (probe.knownGapProbeStatus === "failed") return probe.knownGapProbeStoppedBecauseMaxBudget ? "max-budget-stopped" : "failed";
+    if (probe.knownGapProbeStatus === "cancelled") return probe.knownGapProbeCancelledByConversationChange ? "conversation-changed-cancelled" : "cancelled";
+    const finalScrollTop = Number(probe.knownGapProbeFinalScrollTop);
+    const atTrueTop = Number.isFinite(finalScrollTop) && finalScrollTop <= Number(probe.knownGapProbeTrueTopEpsilon || KNOWN_GAP_PROBE_TRUE_TOP_EPSILON);
+    if (probe.knownGapProbeReachedTopThreshold || atTrueTop || Number(probe.knownGapProbeStableTopConfirmationCount || 0) > 0) return "stable-top-confirmation";
+    if (probe.knownGapProbeAnchorCompensatedScrollTop) return "hydration-anchor-compensation";
+    if (probe.knownGapProbeTopHydrationCycleDetected) return "history-hydration";
+    return "driving-upward";
+  }
+
+  function getKnownGapProbeCanCopyFinalDebug(probe = state.backfill) {
+    return !(probe && probe.knownGapProbeStatus === "running");
+  }
+
+  function getKnownGapProbeHumanStatus(probe = state.backfill) {
+    if (!probe || !probe.knownGapProbeStatus || probe.knownGapProbeStatus === "idle") return "Experimental known-gap probe idle.";
+    if (probe.knownGapProbeReason === "user-interrupted-known-gap-probe") return "Experimental probe was cancelled because manual scrolling/input was detected.";
+    if (probe.knownGapProbeReason === "conversation-changed-during-known-gap-probe") return "Experimental probe was cancelled because the conversation changed.";
+    if (probe.knownGapProbeStatus === "running") {
+      const phase = getKnownGapProbeEstimatedPhase(probe);
+      if (phase === "stable-top-confirmation") {
+        return "Reached top. Confirming stable true top: " + getKnownGapProbeStableTopConfirmationLabel(probe) + ". Do not copy debug yet.";
+      }
+      if (probe.knownGapProbeAnchorCompensatedScrollTop) return "History hydration caused scroll anchoring; continuing upward until stable true top.";
+      if (probe.knownGapProbeProgressDetected) return "Known gap improved; continuing until stable true top.";
+      return "Experimental probe is driving the ChatGPT scroll-root upward until the true top is stable. Do not manually scroll until it finishes.";
+    }
+    if (probe.knownGapProbeStatus === "success" || probe.knownGapProbeStatus === "completed") return "Stable true top confirmed after multiple checks.";
+    if (probe.knownGapProbeReason === "unsafe-reverse-known-gap-probe") return "Experimental probe stopped for safety: viewport moved away from the known top.";
+    if (probe.knownGapProbeReason === "top-hydration-cycle-detected-but-no-known-gap-improvement") return "Top hydration cycles were detected, but the known top gap did not improve.";
+    if (probe.knownGapProbeReason === "reached-true-top-but-no-known-gap-improvement") return "Reached stable top, but no known-gap improvement was detected.";
+    if (probe.knownGapProbeReason === "max-budget-before-stable-true-top") return "Stopped after reaching the experimental probe budget before stable true top.";
+    if (probe.knownGapProbeReason === "current-backfill-running" || probe.knownGapProbeReason === "known-gap-probe-already-running") return "Another backfill/probe operation is already running.";
+    if (probe.knownGapProbeVisualOnly) return "Top hydration cycles were detected, but the known top gap did not improve.";
+    return "Experimental probe stopped: native scroll did not hydrate older history.";
+  }
+
+  function setKnownGapProbePatch(patch = {}) {
+    if (!state.backfill) state.backfill = createDefaultBackfillState();
+    Object.assign(state.backfill, patch);
+    state.backfill.knownGapProbeIsRunning = state.backfill.knownGapProbeStatus === "running";
+    state.backfill.knownGapProbeCanCopyFinalDebug = getKnownGapProbeCanCopyFinalDebug(state.backfill);
+    state.backfill.knownGapProbeStableTopConfirmationLabel = getKnownGapProbeStableTopConfirmationLabel(state.backfill);
+    state.backfill.knownGapProbeEstimatedPhase = getKnownGapProbeEstimatedPhase(state.backfill);
+    state.backfill.knownGapProbeHumanStatus = patch.knownGapProbeHumanStatus || getKnownGapProbeHumanStatus(state.backfill);
+    scheduleDebugPanelRefresh(true);
+    return state.backfill;
   }
 
   function cleanupBackfillUserInterruptGuard() {
@@ -1498,6 +1695,118 @@
       rawAnchorFailureReason: backfill.rawAnchorFailureReason || null,
       knownTopGapAtStop: backfill.knownTopGapAtStop,
       safeAnchorStalledKnownGap: !!backfill.safeAnchorStalledKnownGap,
+      knownGapProbeStatus: backfill.knownGapProbeStatus || "idle",
+      knownGapProbeRunId: backfill.knownGapProbeRunId || null,
+      knownGapProbeIsRunning: backfill.knownGapProbeStatus === "running",
+      knownGapProbeCanCopyFinalDebug: getKnownGapProbeCanCopyFinalDebug(backfill),
+      knownGapProbeAttempted: !!backfill.knownGapProbeAttempted,
+      knownGapProbeCount: Number(backfill.knownGapProbeCount || 0),
+      knownGapProbeMax: Number(backfill.knownGapProbeMax || KNOWN_GAP_NATIVE_PROBE_MAX),
+      knownGapProbeReason: backfill.knownGapProbeReason || null,
+      knownGapProbeHumanStatus: getKnownGapProbeHumanStatus(backfill),
+      knownGapProbeStrategy: backfill.knownGapProbeStrategy || KNOWN_GAP_PROBE_STRATEGY,
+      knownGapProbeHydrationDetected: !!backfill.knownGapProbeHydrationDetected,
+      knownGapProbeVisualOnly: !!backfill.knownGapProbeVisualOnly,
+      knownGapProbeSafetyStopped: !!backfill.knownGapProbeSafetyStopped,
+      knownGapProbeRegistryCountBefore: backfill.knownGapProbeRegistryCountBefore,
+      knownGapProbeRegistryCountAfter: backfill.knownGapProbeRegistryCountAfter,
+      knownGapProbeRegistryDelta: Number(backfill.knownGapProbeRegistryDelta || 0),
+      knownGapProbeVisibleDomCountBefore: backfill.knownGapProbeVisibleDomCountBefore,
+      knownGapProbeVisibleDomCountAfter: backfill.knownGapProbeVisibleDomCountAfter,
+      knownGapProbeVisibleDomDelta: Number(backfill.knownGapProbeVisibleDomDelta || 0),
+      knownGapProbeFirstVisibleIndexBefore: backfill.knownGapProbeFirstVisibleIndexBefore,
+      knownGapProbeFirstVisibleIndexAfter: backfill.knownGapProbeFirstVisibleIndexAfter,
+      knownGapProbeKnownGapBefore: backfill.knownGapProbeKnownGapBefore,
+      knownGapProbeKnownGapAfter: backfill.knownGapProbeKnownGapAfter,
+      knownGapProbeFirstRegistryBefore: backfill.knownGapProbeFirstRegistryBefore || null,
+      knownGapProbeFirstRegistryAfter: backfill.knownGapProbeFirstRegistryAfter || null,
+      knownGapProbeBefore: backfill.knownGapProbeBefore || null,
+      knownGapProbeAfter: backfill.knownGapProbeAfter || null,
+      knownGapProbeDelayed: backfill.knownGapProbeDelayed || null,
+      knownGapProbeNativeScrollAttempted: !!backfill.knownGapProbeNativeScrollAttempted,
+      knownGapProbeNativeScrollWorked: !!backfill.knownGapProbeNativeScrollWorked,
+      knownGapProbeJumpToTopAttempted: !!backfill.knownGapProbeJumpToTopAttempted,
+      knownGapProbeJumpToTopWorked: !!backfill.knownGapProbeJumpToTopWorked,
+      knownGapProbeScrollMethod: backfill.knownGapProbeScrollMethod || null,
+      knownGapProbeScrollTargetDescriptor: backfill.knownGapProbeScrollTargetDescriptor || null,
+      knownGapProbeScrollAmount: backfill.knownGapProbeScrollAmount,
+      knownGapProbeInitialScrollTop: backfill.knownGapProbeInitialScrollTop,
+      knownGapProbeFinalScrollTop: backfill.knownGapProbeFinalScrollTop,
+      knownGapProbeInitialScrollHeight: backfill.knownGapProbeInitialScrollHeight,
+      knownGapProbeFinalScrollHeight: backfill.knownGapProbeFinalScrollHeight,
+      knownGapProbeTotalScrollHeightDelta: Number(backfill.knownGapProbeTotalScrollHeightDelta || 0),
+      knownGapProbeScrollTopBefore: backfill.knownGapProbeScrollTopBefore,
+      knownGapProbeScrollTopAfter: backfill.knownGapProbeScrollTopAfter,
+      knownGapProbeScrollTopAfterImmediate: backfill.knownGapProbeScrollTopAfterImmediate,
+      knownGapProbeScrollTopAfterWait: backfill.knownGapProbeScrollTopAfterWait,
+      knownGapProbeScrollHeightBefore: backfill.knownGapProbeScrollHeightBefore,
+      knownGapProbeScrollHeightAfterImmediate: backfill.knownGapProbeScrollHeightAfterImmediate,
+      knownGapProbeScrollHeightAfterWait: backfill.knownGapProbeScrollHeightAfterWait,
+      knownGapProbeScrollHeightDelta: Number(backfill.knownGapProbeScrollHeightDelta || 0),
+      knownGapProbeClientHeight: backfill.knownGapProbeClientHeight,
+      knownGapProbeReachedTopThreshold: !!backfill.knownGapProbeReachedTopThreshold,
+      knownGapProbeTrueTopEpsilon: Number(backfill.knownGapProbeTrueTopEpsilon || KNOWN_GAP_PROBE_TRUE_TOP_EPSILON),
+      knownGapProbeReachedTrueTop: !!backfill.knownGapProbeReachedTrueTop,
+      knownGapProbeStableAtTop: !!backfill.knownGapProbeStableAtTop,
+      knownGapProbeStableAtTopWaitMs: backfill.knownGapProbeStableAtTopWaitMs,
+      knownGapProbeStableTopConfirmationCount: Number(backfill.knownGapProbeStableTopConfirmationCount || 0),
+      knownGapProbeStableTopConfirmationsRequired: Number(backfill.knownGapProbeStableTopConfirmationsRequired || KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED),
+      knownGapProbeStableTopConfirmationLabel: getKnownGapProbeStableTopConfirmationLabel(backfill),
+      knownGapProbeEstimatedPhase: getKnownGapProbeEstimatedPhase(backfill),
+      knownGapProbeStableTopResetCount: Number(backfill.knownGapProbeStableTopResetCount || 0),
+      knownGapProbeStableTopResetReason: backfill.knownGapProbeStableTopResetReason || null,
+      knownGapProbeDomHydrationDriveEnabled: backfill.knownGapProbeDomHydrationDriveEnabled !== false,
+      knownGapProbeStoppedAfterStableTopConfirmations: !!backfill.knownGapProbeStoppedAfterStableTopConfirmations,
+      knownGapProbeTopNudgeCount: Number(backfill.knownGapProbeTopNudgeCount || 0),
+      knownGapProbeProgressDetected: !!backfill.knownGapProbeProgressDetected,
+      knownGapProbeProgressReason: backfill.knownGapProbeProgressReason || null,
+      knownGapProbeBestKnownGap: backfill.knownGapProbeBestKnownGap,
+      knownGapProbeBestFirstVisibleIndex: backfill.knownGapProbeBestFirstVisibleIndex,
+      knownGapProbeProgressEventCount: Number(backfill.knownGapProbeProgressEventCount || 0),
+      knownGapProbeProgressHistory: Array.isArray(backfill.knownGapProbeProgressHistory) ? backfill.knownGapProbeProgressHistory : [],
+      knownGapProbeReverseIndexObserved: !!backfill.knownGapProbeReverseIndexObserved,
+      knownGapProbeReverseIndexIgnoredInBackfillMode: !!backfill.knownGapProbeReverseIndexIgnoredInBackfillMode,
+      knownGapProbeReverseIndexIgnoredReason: backfill.knownGapProbeReverseIndexIgnoredReason || null,
+      knownGapProbePostHydrationSettleNeeded: !!backfill.knownGapProbePostHydrationSettleNeeded,
+      knownGapProbeLastHydrationAt: backfill.knownGapProbeLastHydrationAt || null,
+      knownGapProbeLastAnchorCompensationAt: backfill.knownGapProbeLastAnchorCompensationAt || null,
+      knownGapProbeMutationCountBeforeStableWait: backfill.knownGapProbeMutationCountBeforeStableWait,
+      knownGapProbeMutationCountAfterStableWait: backfill.knownGapProbeMutationCountAfterStableWait,
+      knownGapProbeMessageHashBeforeStableWait: backfill.knownGapProbeMessageHashBeforeStableWait || null,
+      knownGapProbeMessageHashAfterStableWait: backfill.knownGapProbeMessageHashAfterStableWait || null,
+      knownGapProbeScrollHeightIncreased: !!backfill.knownGapProbeScrollHeightIncreased,
+      knownGapProbeAnchorCompensatedScrollTop: !!backfill.knownGapProbeAnchorCompensatedScrollTop,
+      knownGapProbeTopHydrationCycleDetected: !!backfill.knownGapProbeTopHydrationCycleDetected,
+      knownGapProbeHydrationCycleCount: Number(backfill.knownGapProbeHydrationCycleCount || 0),
+      knownGapProbeAnchorCompensationCount: Number(backfill.knownGapProbeAnchorCompensationCount || 0),
+      knownGapProbeMaxTotalMs: Number(backfill.knownGapProbeMaxTotalMs || KNOWN_GAP_PROBE_MAX_TOTAL_MS),
+      knownGapProbeTotalDurationMs: Number(backfill.knownGapProbeTotalDurationMs || 0),
+      knownGapProbeMaxTotalSteps: Number(backfill.knownGapProbeMaxTotalSteps || KNOWN_GAP_PROBE_MAX_TOTAL_STEPS),
+      knownGapProbeTotalStepCount: Number(backfill.knownGapProbeTotalStepCount || 0),
+      knownGapProbeMaxHydrationCycles: Number(backfill.knownGapProbeMaxHydrationCycles || KNOWN_GAP_PROBE_MAX_HYDRATION_CYCLES),
+      knownGapProbeStoppedBecauseMaxBudget: !!backfill.knownGapProbeStoppedBecauseMaxBudget,
+      knownGapProbeBudgetStopPhase: backfill.knownGapProbeBudgetStopPhase || null,
+      knownGapProbeStartUrl: backfill.knownGapProbeStartUrl || null,
+      knownGapProbeEndUrl: backfill.knownGapProbeEndUrl || null,
+      knownGapProbeStartConversationId: backfill.knownGapProbeStartConversationId || null,
+      knownGapProbeEndConversationId: backfill.knownGapProbeEndConversationId || null,
+      knownGapProbeStartConversationKey: backfill.knownGapProbeStartConversationKey || null,
+      knownGapProbeEndConversationKey: backfill.knownGapProbeEndConversationKey || null,
+      knownGapProbeStartUserMessageCount: backfill.knownGapProbeStartUserMessageCount,
+      knownGapProbeCancelledByConversationChange: !!backfill.knownGapProbeCancelledByConversationChange,
+      knownGapProbeCancelReason: backfill.knownGapProbeCancelReason || null,
+      knownGapProbeStepCount: Number(backfill.knownGapProbeStepCount || 0),
+      knownGapProbeStepHistory: Array.isArray(backfill.knownGapProbeStepHistory) ? backfill.knownGapProbeStepHistory : [],
+      knownGapProbeCycleHistory: Array.isArray(backfill.knownGapProbeCycleHistory) ? backfill.knownGapProbeCycleHistory : [],
+      knownGapProbeWaitMsAfterTop: backfill.knownGapProbeWaitMsAfterTop,
+      knownGapProbeWindowScrollYBefore: backfill.knownGapProbeWindowScrollYBefore,
+      knownGapProbeWindowScrollYAfter: backfill.knownGapProbeWindowScrollYAfter,
+      knownGapProbeTargetCandidates: Array.isArray(backfill.knownGapProbeTargetCandidates) ? backfill.knownGapProbeTargetCandidates : [],
+      knownGapProbeAttemptHistory: Array.isArray(backfill.knownGapProbeAttemptHistory) ? backfill.knownGapProbeAttemptHistory : [],
+      knownGapProbeEarlierDomAnchorAttempted: !!backfill.knownGapProbeEarlierDomAnchorAttempted,
+      knownGapProbeEarlierDomAnchorWorked: !!backfill.knownGapProbeEarlierDomAnchorWorked,
+      knownGapProbeEarlierDomAnchorCandidateIds: Array.isArray(backfill.knownGapProbeEarlierDomAnchorCandidateIds) ? backfill.knownGapProbeEarlierDomAnchorCandidateIds : [],
+      knownGapProbeEarlierDomAnchorRejectedIds: Array.isArray(backfill.knownGapProbeEarlierDomAnchorRejectedIds) ? backfill.knownGapProbeEarlierDomAnchorRejectedIds : [],
       completionConfidence: backfill.completionConfidence || null
     };
   }
@@ -1622,6 +1931,645 @@
       return;
     }
     if (target.node) target.node.scrollTop = Math.max(0, Number(target.node.scrollTop || 0) - amount);
+  }
+
+  function cleanupKnownGapProbeUserInterruptGuard() {
+    if (typeof state.knownGapProbeInterruptCleanup === "function") state.knownGapProbeInterruptCleanup();
+    state.knownGapProbeInterruptCleanup = null;
+  }
+
+  function getKnownGapProbeConversationSnapshot() {
+    const identity = getConversationIdentity();
+    return {
+      url: location.href,
+      conversationId: identity.rawConversationId || identity.key || null,
+      conversationKey: identity.key || null,
+      isRealConversation: !!identity.isRealConversation,
+      isDraftConversation: !!identity.isDraftConversation,
+      userMessageCount: document.querySelectorAll('[data-message-author-role="user"]').length
+    };
+  }
+
+  function getKnownGapProbeConversationChangeReason(startSnapshot, currentSnapshot) {
+    if (!startSnapshot || !currentSnapshot) return null;
+    if (startSnapshot.url && currentSnapshot.url && currentSnapshot.url !== startSnapshot.url) return "url-changed";
+    if (startSnapshot.conversationKey && currentSnapshot.conversationKey && currentSnapshot.conversationKey !== startSnapshot.conversationKey) return "conversation-key-changed";
+    if (startSnapshot.conversationId && currentSnapshot.conversationId && currentSnapshot.conversationId !== startSnapshot.conversationId) return "conversation-id-changed";
+    if (startSnapshot.isRealConversation && !currentSnapshot.isRealConversation && Number(currentSnapshot.userMessageCount || 0) === 0) return "left-real-conversation";
+    if (Number(startSnapshot.userMessageCount || 0) > 0 && Number(currentSnapshot.userMessageCount || 0) === 0 && currentSnapshot.url !== startSnapshot.url) return "user-messages-disappeared";
+    return null;
+  }
+
+  function isKnownGapProbeCurrent(runId, conversationId) {
+    const currentSnapshot = getKnownGapProbeConversationSnapshot();
+    const startSnapshot = {
+      url: state.backfill && state.backfill.knownGapProbeStartUrl,
+      conversationId: state.backfill && state.backfill.knownGapProbeStartConversationId,
+      conversationKey: state.backfill && (state.backfill.knownGapProbeStartConversationKey || conversationId),
+      isRealConversation: state.backfill && !isDraftConversationKey(state.backfill.knownGapProbeStartConversationKey || conversationId),
+      userMessageCount: state.backfill && state.backfill.knownGapProbeStartUserMessageCount
+    };
+    return !!(
+      state.backfill &&
+      state.backfill.knownGapProbeRunId === runId &&
+      state.backfill.knownGapProbeStatus === "running" &&
+      !getKnownGapProbeConversationChangeReason(startSnapshot, currentSnapshot)
+    );
+  }
+
+  function cancelKnownGapProbeIfNotCurrent(runId, conversationId) {
+    if (isKnownGapProbeCurrent(runId, conversationId)) return false;
+    if (state.backfill && state.backfill.knownGapProbeRunId === runId && state.backfill.knownGapProbeStatus === "running") {
+      const currentSnapshot = getKnownGapProbeConversationSnapshot();
+      const startSnapshot = {
+        url: state.backfill.knownGapProbeStartUrl,
+        conversationId: state.backfill.knownGapProbeStartConversationId,
+        conversationKey: state.backfill.knownGapProbeStartConversationKey || conversationId,
+        isRealConversation: !isDraftConversationKey(state.backfill.knownGapProbeStartConversationKey || conversationId),
+        userMessageCount: state.backfill.knownGapProbeStartUserMessageCount
+      };
+      const changeReason = getKnownGapProbeConversationChangeReason(startSnapshot, currentSnapshot);
+      const reason = changeReason ? "conversation-changed-during-known-gap-probe" : "known-gap-probe-cancelled";
+      setKnownGapProbePatch({
+        knownGapProbeStatus: changeReason ? "cancelled" : "failed",
+        knownGapProbeReason: reason,
+        knownGapProbeEndUrl: currentSnapshot.url,
+        knownGapProbeEndConversationId: currentSnapshot.conversationId,
+        knownGapProbeEndConversationKey: currentSnapshot.conversationKey,
+        knownGapProbeCancelledByConversationChange: !!changeReason,
+        knownGapProbeCancelReason: changeReason || reason
+      });
+      appendBackfillTraceEvent(changeReason ? "known-gap-continuous-probe-conversation-changed-cancelled" : "known-gap-native-probe-failed", "cancel", {
+        result: changeReason ? "cancelled" : "failed",
+        reason
+      });
+    }
+    cleanupKnownGapProbeUserInterruptGuard();
+    return true;
+  }
+
+  function setupKnownGapProbeUserInterruptGuard(runId) {
+    cleanupKnownGapProbeUserInterruptGuard();
+    const cancelForInterrupt = (event) => {
+      if (!state.backfill || state.backfill.knownGapProbeRunId !== runId || state.backfill.knownGapProbeStatus !== "running") return;
+      if (Date.now() <= state.programmaticScrollUntil) return;
+      if (event && event.target && state.panel && state.panel.contains(event.target)) return;
+      if (event && event.type === "keydown") {
+        const keys = new Set(["PageUp", "PageDown", "Home", "End", "ArrowUp", "ArrowDown", " "]);
+        if (!keys.has(event.key)) return;
+      }
+      const currentSnapshot = getKnownGapProbeConversationSnapshot();
+      setKnownGapProbePatch({
+        knownGapProbeStatus: "cancelled",
+        knownGapProbeReason: "user-interrupted-known-gap-probe",
+        knownGapProbeSafetyStopped: false,
+        knownGapProbeEndUrl: currentSnapshot.url,
+        knownGapProbeEndConversationId: currentSnapshot.conversationId,
+        knownGapProbeEndConversationKey: currentSnapshot.conversationKey,
+        knownGapProbeCancelReason: "user-interrupted-known-gap-probe"
+      });
+      cleanupKnownGapProbeUserInterruptGuard();
+      appendBackfillTraceEvent("known-gap-continuous-probe-user-interrupted", "cancel", {
+        result: "cancelled",
+        reason: "user-interrupted-known-gap-probe"
+      });
+    };
+    window.addEventListener("wheel", cancelForInterrupt, true);
+    window.addEventListener("touchstart", cancelForInterrupt, true);
+    window.addEventListener("touchmove", cancelForInterrupt, true);
+    window.addEventListener("keydown", cancelForInterrupt, true);
+    window.addEventListener("pointerdown", cancelForInterrupt, true);
+    state.knownGapProbeInterruptCleanup = () => {
+      window.removeEventListener("wheel", cancelForInterrupt, true);
+      window.removeEventListener("touchstart", cancelForInterrupt, true);
+      window.removeEventListener("touchmove", cancelForInterrupt, true);
+      window.removeEventListener("keydown", cancelForInterrupt, true);
+      window.removeEventListener("pointerdown", cancelForInterrupt, true);
+    };
+  }
+
+  function getKnownGapProbeTargetKey(node) {
+    if (node === window) return "window";
+    if (node === document.scrollingElement) return "document.scrollingElement";
+    if (node === document.documentElement) return "document.documentElement";
+    if (node === document.body) return "document.body";
+    return node;
+  }
+
+  function getKnownGapProbeTargetDiagnostics(node, metrics) {
+    const className = typeof node.className === "string" ? node.className : "";
+    const computed = window.getComputedStyle ? window.getComputedStyle(node) : null;
+    const rect = node && node !== window && node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+    const scrollTop = metrics ? Number(metrics.scrollTop || 0) : Number(node && node.scrollTop || 0);
+    const scrollHeight = metrics ? Number(metrics.scrollHeight || 0) : Number(node && node.scrollHeight || 0);
+    const clientHeight = metrics ? Number(metrics.clientHeight || 0) : Number(node && node.clientHeight || 0);
+    const rectTop = rect ? rect.top : null;
+    const rectHeight = rect ? rect.height : clientHeight;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const overflowY = computed ? computed.overflowY : null;
+    const containsUserMessage = !!(node && node.querySelector && node.querySelector('[data-message-author-role="user"]'));
+    const containsThread = !!(node && node.querySelector && node.querySelector("#thread"));
+    const containsConversationMain = !!(node && node.querySelector && node.querySelector("main#main"));
+    const insideCode = !!(node && node.closest && node.closest("pre,code"));
+    const containsCode = !!(node && node.querySelector && node.querySelector("pre,code"));
+    const role = node && node.getAttribute ? node.getAttribute("role") : null;
+    const smallLocalOverflow = (rectHeight && rectHeight < 300) || clientHeight < 300;
+    const noScrollbarMaxHeight = className.includes("no-scrollbar") && className.includes("max-h");
+    const scrollRange = scrollHeight - clientHeight;
+    const mainScrollRootShape = className.includes("group/scroll-root") &&
+      className.includes("overflow-y-auto") &&
+      (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") &&
+      scrollHeight > clientHeight + 1000 &&
+      viewportHeight && clientHeight >= viewportHeight * 0.6 &&
+      rectTop != null && rectTop >= -5 && rectTop <= 80 &&
+      rectHeight >= viewportHeight * 0.6 &&
+      (containsUserMessage || containsThread);
+
+    let score = 0;
+    if (className.includes("group/scroll-root")) score += 80;
+    if (className.includes("overflow-y-auto")) score += 45;
+    if (className.includes("scrollbar-gutter")) score += 25;
+    if (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") score += 30;
+    if (scrollTop > 0) score += 25;
+    if (scrollRange > 1000) score += 30;
+    else if (scrollRange > 400) score += 10;
+    if (rectTop != null && rectTop >= -5 && rectTop <= 80) score += 20;
+    if (viewportHeight && rectHeight >= viewportHeight * 0.6) score += 25;
+    if (containsUserMessage) score += 30;
+    if (containsThread) score += 25;
+    if (containsConversationMain) score += 10;
+    if (mainScrollRootShape) score += 250;
+
+    const rejectedReasons = [];
+    if (insideCode) rejectedReasons.push("inside-pre-or-code");
+    if (noScrollbarMaxHeight) rejectedReasons.push("no-scrollbar-max-h-local-container");
+    if (smallLocalOverflow) rejectedReasons.push("small-local-scroll-container");
+    if (containsCode && !containsUserMessage && !containsThread && !containsConversationMain) rejectedReasons.push("code-only-scroll-container");
+    if (role && ["dialog", "menu", "listbox", "tooltip", "tabpanel"].includes(role)) rejectedReasons.push("local-panel-role-" + role);
+    if (!mainScrollRootShape && /popover|dropdown|modal|menu|tooltip|panel/.test(className)) rejectedReasons.push("local-panel-class");
+    if (scrollRange < 300) rejectedReasons.push("tiny-scroll-range");
+    if (!mainScrollRootShape && scrollRange < 1000) rejectedReasons.push("insufficient-scroll-range");
+    if (!mainScrollRootShape && smallLocalOverflow) score -= 200;
+    if (!mainScrollRootShape && noScrollbarMaxHeight) score -= 250;
+    if (!mainScrollRootShape && containsCode && !containsUserMessage && !containsThread && !containsConversationMain) score -= 180;
+    if (!mainScrollRootShape && role && ["dialog", "menu", "listbox", "tooltip", "tabpanel"].includes(role)) score -= 140;
+    if (!mainScrollRootShape && scrollRange < 1000) score -= 80;
+
+    return {
+      score,
+      rejected: rejectedReasons.length > 0 && !mainScrollRootShape,
+      rejectedReason: rejectedReasons.join(",") || null,
+      rectTop: rectTop != null ? Math.round(rectTop) : null,
+      rectHeight: rectHeight != null ? Math.round(rectHeight) : null,
+      overflowY,
+      classNamePreview: className ? className.slice(0, 240) : null,
+      scrollTop,
+      scrollHeight,
+      clientHeight,
+      canScrollDown: scrollTop < scrollHeight - clientHeight - 2,
+      containsUserMessage,
+      containsThread,
+      mainScrollRootShape
+    };
+  }
+
+  function buildKnownGapProbeTargetInfo(target, methodTried, errorMessage) {
+    const metrics = getBackfillScrollMetrics(target);
+    const node = target && target.node;
+    const diagnostics = node && node !== window ? getKnownGapProbeTargetDiagnostics(node, metrics) : {
+      score: target && target.isDocument ? 20 : 10,
+      rejected: Number(metrics.scrollHeight || 0) <= Number(metrics.clientHeight || 0) + 2,
+      rejectedReason: Number(metrics.scrollHeight || 0) <= Number(metrics.clientHeight || 0) + 2 ? "document-or-window-not-scrollable" : null,
+      rectTop: null,
+      rectHeight: null,
+      overflowY: null,
+      classNamePreview: null,
+      scrollTop: metrics.scrollTop,
+      scrollHeight: metrics.scrollHeight,
+      clientHeight: metrics.clientHeight,
+      canScrollDown: Number(metrics.scrollTop || 0) < Number(metrics.scrollHeight || 0) - Number(metrics.clientHeight || 0) - 2
+    };
+    return {
+      descriptor: describeBackfillScrollTarget(target),
+      score: diagnostics.score,
+      rejected: !!diagnostics.rejected,
+      rejectedReason: diagnostics.rejectedReason,
+      isDocument: !!(target && target.isDocument),
+      isWindow: node === window,
+      scrollTop: metrics.scrollTop,
+      scrollTopBefore: metrics.scrollTop,
+      scrollTopAfter: metrics.scrollTop,
+      scrollHeight: metrics.scrollHeight,
+      clientHeight: metrics.clientHeight,
+      canScrollUp: !!metrics.canScrollUp,
+      canScrollDown: diagnostics.canScrollDown != null ? !!diagnostics.canScrollDown :
+        Number(metrics.scrollTop || 0) < Number(metrics.scrollHeight || 0) - Number(metrics.clientHeight || 0) - 2,
+      rectTop: diagnostics.rectTop,
+      rectHeight: diagnostics.rectHeight,
+      overflowY: diagnostics.overflowY,
+      classNamePreview: diagnostics.classNamePreview,
+      className: diagnostics.classNamePreview,
+      methodTried: methodTried || null,
+      workedByScrollMetric: false,
+      errorMessage: errorMessage || null
+    };
+  }
+
+  function getKnownGapProbeScrollRootScore(node) {
+    if (!node || node === window || !node.getBoundingClientRect) return 0;
+    return getKnownGapProbeTargetDiagnostics(node, null).score;
+  }
+
+  function findKnownGapProbeScrollRootCandidates() {
+    return Array.from(document.querySelectorAll("div")).map((node) => ({
+      node,
+      diagnostics: getKnownGapProbeTargetDiagnostics(node, null)
+    })).filter((item) => item.diagnostics.score >= 80 || item.diagnostics.rejected).sort((a, b) => b.diagnostics.score - a.diagnostics.score).slice(0, 12);
+  }
+
+  function collectKnownGapProbeScrollTargets() {
+    const candidates = [];
+    const seen = new Set();
+    const add = (node, source, priority) => {
+      if (!node || isInsidePanel(node)) return;
+      const key = getKnownGapProbeTargetKey(node);
+      if (seen.has(key)) return;
+      seen.add(key);
+      const target = createBackfillScrollTarget(node, source);
+      if (!target) return;
+      const info = buildKnownGapProbeTargetInfo(target, null, null);
+      candidates.push({ target, info, source: source || "unknown", priority: Number(priority || 0) });
+    };
+
+    findKnownGapProbeScrollRootCandidates().forEach((item, index) => {
+      add(item.node, "chatgpt-scroll-root score=" + item.diagnostics.score, 1000 - index);
+    });
+    const primary = findBackfillScrollTarget();
+    if (primary && primary.node) add(primary.node, "findBackfillScrollTarget", 700);
+    add(document.querySelector("main#main"), "main#main", 500);
+    add(document.querySelector("#thread"), "#thread", 490);
+
+    const firstVisible = getFirstVisibleBackfillMessageAnchor();
+    let current = firstVisible && firstVisible.node ? firstVisible.node.parentElement : null;
+    let depth = 0;
+    while (current && current !== document.body && depth < 16) {
+      add(current, "first-visible-message-ancestor-" + depth, 650 - depth);
+      current = current.parentElement;
+      depth += 1;
+    }
+    add(document.scrollingElement, "document.scrollingElement", 200);
+    add(document.documentElement, "document.documentElement", 190);
+    add(document.body, "document.body", 180);
+    add(window, "window", 170);
+
+    candidates.sort((a, b) => {
+      if (a.info.rejected !== b.info.rejected) return a.info.rejected ? 1 : -1;
+      if (a.priority !== b.priority) return b.priority - a.priority;
+      if (a.info.score !== b.info.score) return Number(b.info.score || 0) - Number(a.info.score || 0);
+      if (a.info.canScrollUp !== b.info.canScrollUp) return a.info.canScrollUp ? -1 : 1;
+      const aRange = Number(a.info.scrollHeight || 0) - Number(a.info.clientHeight || 0);
+      const bRange = Number(b.info.scrollHeight || 0) - Number(b.info.clientHeight || 0);
+      return bRange - aRange;
+    });
+
+    return candidates.slice(0, 18);
+  }
+
+  function scrollKnownGapProbeTargetBy(target, amount) {
+    const node = target && target.node;
+    if (!node) return "unsupported";
+    markProgrammaticScroll();
+    if (node === window) {
+      window.scrollBy({ top: -amount, behavior: "auto" });
+      return "window.scrollBy";
+    }
+    if (target && target.isDocument && node && node !== document && typeof node.scrollTop === "number") {
+      node.scrollTop = Math.max(0, Number(node.scrollTop || 0) - amount);
+      return "scrollTop-set";
+    }
+    if (target && target.isDocument) {
+      window.scrollBy({ top: -amount, behavior: "auto" });
+      return "window.scrollBy";
+    }
+    if (node && typeof node.scrollBy === "function") {
+      node.scrollBy({ top: -amount, behavior: "auto" });
+      return "scrollBy";
+    }
+    if (node && typeof node.scrollTop === "number") {
+      node.scrollTop = Math.max(0, Number(node.scrollTop || 0) - amount);
+      return "scrollTop-set";
+    }
+    return "unsupported";
+  }
+
+  async function tryKnownGapNativeScrollCandidate(candidate, attempt, beforeAudit) {
+    const target = candidate && candidate.target;
+    const info = candidate && candidate.info ? { ...candidate.info } : buildKnownGapProbeTargetInfo(target, null, null);
+    const before = getBackfillScrollMetrics(target);
+    info.scrollTopBefore = before.scrollTop;
+    info.scrollHeight = before.scrollHeight;
+    info.clientHeight = before.clientHeight;
+    info.canScrollUp = !!before.canScrollUp;
+    let methodTried = null;
+    let errorMessage = null;
+    const stepHistory = [];
+    let afterImmediate = before;
+    const baseAmount = Math.min(1600, Math.max(800, Number(before.clientHeight || window.innerHeight || 800) * 1.2));
+    for (let step = 1; step <= KNOWN_GAP_NATIVE_PROBE_MAX_STEPS; step += 1) {
+      const stepBefore = getBackfillScrollMetrics(target);
+      const amount = Math.round(baseAmount);
+      try {
+        methodTried = scrollKnownGapProbeTargetBy(target, amount);
+      } catch (error) {
+        errorMessage = error && error.message ? error.message : String(error);
+      }
+      await waitForBackfillFrame(120);
+      const stepAfter = getBackfillScrollMetrics(target);
+      afterImmediate = stepAfter;
+      const moved = Math.abs(Number(stepAfter.scrollTop || 0) - Number(stepBefore.scrollTop || 0)) > 1 ||
+        Math.abs(Number(stepAfter.windowScrollY || 0) - Number(stepBefore.windowScrollY || 0)) > 1;
+      const stepEntry = {
+        step,
+        methodTried,
+        amount,
+        scrollTopBefore: stepBefore.scrollTop,
+        scrollTopAfter: stepAfter.scrollTop,
+        scrollHeightBefore: stepBefore.scrollHeight,
+        scrollHeightAfter: stepAfter.scrollHeight,
+        workedByScrollMetric: moved,
+        errorMessage: errorMessage || null
+      };
+      stepHistory.push(stepEntry);
+      appendBackfillTraceEvent("known-gap-native-probe-step", "native-scroll-step", {
+        beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+        knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+        registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+        targetDescriptor: info.descriptor,
+        scrollMethod: methodTried,
+        scrollAmount: amount,
+        result: moved ? "scroll-metric-moved" : "no-scroll-metric",
+        reason: "step-" + step
+      });
+      if (Number(stepAfter.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD) break;
+      await waitForBackfillFrame(300);
+    }
+
+    const reachedTopThreshold = Number(afterImmediate.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD;
+    const waitMsAfterTop = reachedTopThreshold ? Math.min(3500, 2500 + Math.max(0, attempt - 1) * 250) : Math.min(1600, 1200 + attempt * 80);
+    if (reachedTopThreshold) {
+      appendBackfillTraceEvent("known-gap-native-probe-reached-top-threshold", "threshold", {
+        beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+        knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+        registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+        targetDescriptor: info.descriptor,
+        scrollMethod: methodTried,
+        scrollAmount: stepHistory.reduce((sum, step) => sum + Number(step.amount || 0), 0),
+        result: "reached-top-threshold",
+        reason: "scrollTop<=200"
+      });
+      appendBackfillTraceEvent("known-gap-native-probe-wait-hydration", "wait", {
+        beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+        knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+        registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+        targetDescriptor: info.descriptor,
+        scrollMethod: methodTried,
+        scrollAmount: null,
+        result: "waiting",
+        reason: "top-threshold-wait-ms-" + waitMsAfterTop
+      });
+    }
+    await waitForBackfillFrame(waitMsAfterTop);
+    const afterWait = getBackfillScrollMetrics(target);
+    const scrollHeightDelta = Number(afterWait.scrollHeight || 0) - Number(before.scrollHeight || 0);
+    const scrollHeightIncreased = scrollHeightDelta > 20;
+    const anchorCompensatedScrollTop = reachedTopThreshold && scrollHeightIncreased &&
+      Number(afterWait.scrollTop || 0) > Number(afterImmediate.scrollTop || 0) + 20;
+    if (scrollHeightIncreased) {
+      appendBackfillTraceEvent("known-gap-native-probe-scrollheight-increased", "observe", {
+        beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+        knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+        registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+        targetDescriptor: info.descriptor,
+        scrollMethod: methodTried,
+        scrollAmount: null,
+        result: "scrollheight-increased",
+        reason: "delta-" + Math.round(scrollHeightDelta)
+      });
+    }
+    if (anchorCompensatedScrollTop) {
+      appendBackfillTraceEvent("known-gap-native-probe-anchor-compensated", "observe", {
+        beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+        knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+        registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+        targetDescriptor: info.descriptor,
+        scrollMethod: methodTried,
+        scrollAmount: null,
+        result: "anchor-compensated",
+        reason: "scrollTop-rebounded-after-scrollHeight-growth"
+      });
+    }
+
+    info.scrollTopAfter = afterWait.scrollTop;
+    info.scrollTopAfterImmediate = afterImmediate.scrollTop;
+    info.scrollTopAfterWait = afterWait.scrollTop;
+    info.scrollHeightBefore = before.scrollHeight;
+    info.scrollHeightAfterImmediate = afterImmediate.scrollHeight;
+    info.scrollHeightAfterWait = afterWait.scrollHeight;
+    info.scrollHeightDelta = scrollHeightDelta;
+    info.reachedTopThreshold = reachedTopThreshold;
+    info.scrollHeightIncreased = scrollHeightIncreased;
+    info.anchorCompensatedScrollTop = anchorCompensatedScrollTop;
+    info.topHydrationCycleDetected = reachedTopThreshold && scrollHeightIncreased;
+    info.stepCount = stepHistory.length;
+    info.waitMsAfterTop = waitMsAfterTop;
+    info.methodTried = methodTried;
+    info.workedByScrollMetric = stepHistory.some((step) => step.workedByScrollMetric);
+    info.errorMessage = errorMessage;
+    return {
+      info,
+      before,
+      after: afterWait,
+      afterImmediate,
+      afterWait,
+      methodTried,
+      workedByScrollMetric: info.workedByScrollMetric,
+      reachedTopThreshold,
+      scrollHeightIncreased,
+      scrollHeightDelta,
+      anchorCompensatedScrollTop,
+      topHydrationCycleDetected: reachedTopThreshold && scrollHeightIncreased,
+      waitMsAfterTop,
+      stepHistory,
+      stepCount: stepHistory.length,
+      amount: stepHistory.reduce((sum, step) => sum + Number(step.amount || 0), 0)
+    };
+  }
+
+  async function runKnownGapNativeScrollPulse(attempt, beforeAudit) {
+    const candidates = collectKnownGapProbeScrollTargets();
+    const targetInfos = candidates.map((candidate) => candidate.info);
+    appendBackfillTraceEvent("known-gap-native-probe-targets", "collect", {
+      beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+      knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+      registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+      result: "collected",
+      reason: "native-scroll-target-candidates"
+    });
+
+    let selected = null;
+    for (const candidate of candidates) {
+      if (candidate.info && candidate.info.rejected) continue;
+      const result = await tryKnownGapNativeScrollCandidate(candidate, attempt, beforeAudit);
+      const index = targetInfos.findIndex((item) => item.descriptor === result.info.descriptor);
+      if (index >= 0) targetInfos[index] = result.info;
+      if (!selected || result.workedByScrollMetric) selected = result;
+      if (result.workedByScrollMetric) break;
+    }
+
+    const chosenInfo = selected && selected.info ? selected.info : targetInfos[0] || null;
+    appendBackfillTraceEvent("known-gap-native-probe-scroll", "native-scroll", {
+      beforeIndex: beforeAudit ? beforeAudit.firstVisibleDomRegistryIndex : null,
+      knownGapBefore: beforeAudit ? beforeAudit.knownTopGapFromFirstVisible : null,
+      registryCountBefore: beforeAudit ? beforeAudit.registryCount : null,
+      targetDescriptor: chosenInfo ? chosenInfo.descriptor : null,
+      scrollMethod: chosenInfo ? chosenInfo.methodTried : null,
+      scrollAmount: selected ? selected.amount : null,
+      result: chosenInfo && chosenInfo.workedByScrollMetric ? "scroll-metric-moved" : "no-scroll-metric",
+      reason: "native-scroll-api"
+    });
+
+    return {
+      amount: selected ? selected.amount : null,
+      targetCandidates: targetInfos,
+      selectedInfo: chosenInfo,
+      selectedBefore: selected && selected.before ? selected.before : null,
+      selectedAfter: selected && selected.after ? selected.after : null,
+      selectedAfterImmediate: selected && selected.afterImmediate ? selected.afterImmediate : null,
+      selectedAfterWait: selected && selected.afterWait ? selected.afterWait : null,
+      nativeScrollAttempted: candidates.length > 0,
+      nativeScrollWorked: !!(chosenInfo && chosenInfo.workedByScrollMetric),
+      reachedTopThreshold: !!(selected && selected.reachedTopThreshold),
+      scrollHeightIncreased: !!(selected && selected.scrollHeightIncreased),
+      scrollHeightDelta: selected ? selected.scrollHeightDelta : 0,
+      anchorCompensatedScrollTop: !!(selected && selected.anchorCompensatedScrollTop),
+      topHydrationCycleDetected: !!(selected && selected.topHydrationCycleDetected),
+      waitMsAfterTop: selected ? selected.waitMsAfterTop : null,
+      stepHistory: selected && Array.isArray(selected.stepHistory) ? selected.stepHistory : [],
+      stepCount: selected ? selected.stepCount : 0
+    };
+  }
+
+  function isKnownGapProbeHydrationSuccess(before, after, comparison) {
+    if (!before || !after || !comparison) return false;
+    const beforeIndex = typeof before.firstVisibleDomRegistryIndex === "number" ? before.firstVisibleDomRegistryIndex : null;
+    const afterIndex = typeof after.firstVisibleDomRegistryIndex === "number" ? after.firstVisibleDomRegistryIndex : null;
+    const beforeGap = typeof before.knownTopGapFromFirstVisible === "number" ? before.knownTopGapFromFirstVisible : null;
+    const afterGap = typeof after.knownTopGapFromFirstVisible === "number" ? after.knownTopGapFromFirstVisible : null;
+    const visibleHead = Array.isArray(after.visibleDomMessageIdsHead) ? after.visibleDomMessageIdsHead : [];
+    const visibleHeadHasEarlierKnownMessage = beforeIndex != null && visibleHead.some((id) => {
+      const registryIndex = getRegistryOrderIndex(id);
+      return registryIndex >= 0 && registryIndex < beforeIndex;
+    });
+    return Number(comparison.hydrationRegistryDelta || 0) > 0 ||
+      !!comparison.hydrationFirstRegistryChanged ||
+      (beforeGap != null && afterGap != null && afterGap < beforeGap) ||
+      (beforeIndex != null && afterIndex != null && afterIndex >= 0 && afterIndex < beforeIndex) ||
+      visibleHeadHasEarlierKnownMessage;
+  }
+
+  function getKnownGapProbeVisibleHeadEarliestIndex(audit) {
+    const ids = audit && Array.isArray(audit.visibleDomMessageIdsHead) ? audit.visibleDomMessageIdsHead : [];
+    const indexes = ids.map((id) => getRegistryOrderIndex(id)).filter((index) => index >= 0);
+    return indexes.length ? Math.min(...indexes) : null;
+  }
+
+  function didKnownGapProbeVisibleHeadMoveLater(before, after) {
+    const beforeIndex = getKnownGapProbeVisibleHeadEarliestIndex(before);
+    const afterIndex = getKnownGapProbeVisibleHeadEarliestIndex(after);
+    return beforeIndex != null && afterIndex != null && afterIndex > beforeIndex;
+  }
+
+  function getKnownGapProbeResultReason(before, after, comparison, pulse, hydrationSuccess) {
+    const beforeGap = before && typeof before.knownTopGapFromFirstVisible === "number" ? before.knownTopGapFromFirstVisible : null;
+    const afterGap = after && typeof after.knownTopGapFromFirstVisible === "number" ? after.knownTopGapFromFirstVisible : null;
+    if (hydrationSuccess) {
+      if (beforeGap != null && afterGap != null && afterGap < beforeGap) return "known-gap-reduced-after-top-hydration";
+      return comparison && comparison.hydrationDetectionReason ? comparison.hydrationDetectionReason : "known-gap-probe-hydration-detected";
+    }
+    if (pulse && pulse.topHydrationCycleDetected) return "top-hydration-cycle-detected-but-no-known-gap-improvement";
+    if (pulse && pulse.reachedTopThreshold && !pulse.scrollHeightIncreased) return "reached-top-but-no-scrollheight-growth";
+    return comparison && comparison.hydrationDetectionReason ? comparison.hydrationDetectionReason : "native-scroll-no-hydration";
+  }
+
+  async function runKnownGapEarlierDomAnchorProbe(currentAudit) {
+    const beforeIndex = currentAudit && typeof currentAudit.firstVisibleDomRegistryIndex === "number" ? currentAudit.firstVisibleDomRegistryIndex : -1;
+    const candidateIds = [];
+    const rejectedIds = [];
+    if (beforeIndex <= 0 || !Array.isArray(state.messageOrder)) {
+      return { attempted: false, worked: false, candidateIds, rejectedIds, selectedId: null };
+    }
+    for (let index = beforeIndex - 1; index >= 0; index -= 1) {
+      const messageId = state.messageOrder[index];
+      if (!messageId) continue;
+      const node = document.querySelector(`[data-message-id="${cssEscape(messageId)}"]`);
+      if (node && node.isConnected && typeof node.scrollIntoView === "function") {
+        candidateIds.push(messageId);
+        markProgrammaticScroll();
+        node.scrollIntoView({ block: "start", behavior: "auto" });
+        await waitForBackfillFrame(900);
+        return { attempted: true, worked: true, candidateIds, rejectedIds, selectedId: messageId };
+      }
+      rejectedIds.push(messageId);
+    }
+    return { attempted: rejectedIds.length > 0, worked: false, candidateIds, rejectedIds, selectedId: null };
+  }
+
+  function buildKnownGapProbeAuditPatch(before, after, comparison, pulse, attemptHistory) {
+    const selectedInfo = pulse && pulse.selectedInfo ? pulse.selectedInfo : {};
+    const hydrationSuccess = isKnownGapProbeHydrationSuccess(before, after, comparison);
+    return {
+      knownGapProbeRegistryCountBefore: before ? before.registryCount : null,
+      knownGapProbeRegistryCountAfter: after ? after.registryCount : null,
+      knownGapProbeRegistryDelta: comparison ? Number(comparison.hydrationRegistryDelta || 0) : 0,
+      knownGapProbeVisibleDomCountBefore: before ? before.visibleDomUserMessageCount : null,
+      knownGapProbeVisibleDomCountAfter: after ? after.visibleDomUserMessageCount : null,
+      knownGapProbeVisibleDomDelta: comparison ? Number(comparison.hydrationVisibleDomDelta || 0) : 0,
+      knownGapProbeFirstVisibleIndexBefore: before ? before.firstVisibleDomRegistryIndex : null,
+      knownGapProbeFirstVisibleIndexAfter: after ? after.firstVisibleDomRegistryIndex : null,
+      knownGapProbeKnownGapBefore: before ? before.knownTopGapFromFirstVisible : null,
+      knownGapProbeKnownGapAfter: after ? after.knownTopGapFromFirstVisible : null,
+      knownGapProbeFirstRegistryBefore: before ? before.firstRegistryMessageId : null,
+      knownGapProbeFirstRegistryAfter: after ? after.firstRegistryMessageId : null,
+      knownGapProbeBefore: before || null,
+      knownGapProbeAfter: after || null,
+      knownGapProbeHydrationDetected: !!hydrationSuccess,
+      knownGapProbeVisualOnly: !hydrationSuccess && !!((comparison && comparison.hydrationOnlyVisualMovement) || (pulse && pulse.nativeScrollWorked)),
+      knownGapProbeNativeScrollAttempted: !!(pulse && pulse.nativeScrollAttempted),
+      knownGapProbeNativeScrollWorked: !!(pulse && pulse.nativeScrollWorked),
+      knownGapProbeScrollMethod: selectedInfo.methodTried || null,
+      knownGapProbeScrollTargetDescriptor: selectedInfo.descriptor || null,
+      knownGapProbeScrollAmount: pulse ? pulse.amount : null,
+      knownGapProbeScrollTopBefore: selectedInfo.scrollTopBefore,
+      knownGapProbeScrollTopAfter: selectedInfo.scrollTopAfter,
+      knownGapProbeScrollTopAfterImmediate: pulse && pulse.selectedAfterImmediate ? pulse.selectedAfterImmediate.scrollTop : null,
+      knownGapProbeScrollTopAfterWait: pulse && pulse.selectedAfterWait ? pulse.selectedAfterWait.scrollTop : selectedInfo.scrollTopAfter,
+      knownGapProbeScrollHeightBefore: pulse && pulse.selectedBefore ? pulse.selectedBefore.scrollHeight : selectedInfo.scrollHeight,
+      knownGapProbeScrollHeightAfterImmediate: pulse && pulse.selectedAfterImmediate ? pulse.selectedAfterImmediate.scrollHeight : null,
+      knownGapProbeScrollHeightAfterWait: pulse && pulse.selectedAfterWait ? pulse.selectedAfterWait.scrollHeight : null,
+      knownGapProbeScrollHeightDelta: pulse ? Number(pulse.scrollHeightDelta || 0) : 0,
+      knownGapProbeClientHeight: pulse && pulse.selectedBefore ? pulse.selectedBefore.clientHeight : selectedInfo.clientHeight,
+      knownGapProbeReachedTopThreshold: !!(pulse && pulse.reachedTopThreshold),
+      knownGapProbeScrollHeightIncreased: !!(pulse && pulse.scrollHeightIncreased),
+      knownGapProbeAnchorCompensatedScrollTop: !!(pulse && pulse.anchorCompensatedScrollTop),
+      knownGapProbeTopHydrationCycleDetected: !!(pulse && pulse.topHydrationCycleDetected),
+      knownGapProbeStepCount: pulse ? Number(pulse.stepCount || 0) : 0,
+      knownGapProbeStepHistory: pulse && Array.isArray(pulse.stepHistory) ? pulse.stepHistory : [],
+      knownGapProbeWaitMsAfterTop: pulse ? pulse.waitMsAfterTop : null,
+      knownGapProbeWindowScrollYBefore: pulse && pulse.selectedBefore ? pulse.selectedBefore.windowScrollY : window.scrollY || 0,
+      knownGapProbeWindowScrollYAfter: pulse && pulse.selectedAfter ? pulse.selectedAfter.windowScrollY : window.scrollY || 0,
+      knownGapProbeTargetCandidates: pulse && Array.isArray(pulse.targetCandidates) ? pulse.targetCandidates : [],
+      knownGapProbeAttemptHistory: attemptHistory || []
+    };
   }
 
   function getFirstVisibleBackfillMessageAnchor() {
@@ -2506,6 +3454,972 @@
     };
   }
 
+  function startKnownGapTopHydrationProbe() {
+    const backfillStatus = state.backfill && state.backfill.status;
+    if (backfillStatus === "running" || backfillStatus === "cancelling") {
+      setKnownGapProbePatch({
+        knownGapProbeStatus: "failed",
+        knownGapProbeAttempted: true,
+        knownGapProbeReason: "current-backfill-running"
+      });
+      return state.backfill;
+    }
+    if (state.backfill && state.backfill.knownGapProbeStatus === "running") {
+      setKnownGapProbePatch({
+        knownGapProbeReason: "known-gap-probe-already-running"
+      });
+      return state.backfill;
+    }
+
+    const startSnapshot = getKnownGapProbeConversationSnapshot();
+    const conversationId = startSnapshot.conversationKey || getConversationId() || state.currentConversationId;
+    const runId = "known-gap-native-probe-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+    const before = getBackfillHydrationAuditSnapshot("known-gap-probe-before");
+    const attemptHistory = [];
+    setKnownGapProbePatch({
+      knownGapProbeStatus: "running",
+      knownGapProbeRunId: runId,
+      knownGapProbeIsRunning: true,
+      knownGapProbeCanCopyFinalDebug: false,
+      knownGapProbeAttempted: true,
+      knownGapProbeCount: 0,
+      knownGapProbeMax: KNOWN_GAP_NATIVE_PROBE_MAX,
+      knownGapProbeReason: null,
+      knownGapProbeStrategy: KNOWN_GAP_PROBE_STRATEGY,
+      knownGapProbeHydrationDetected: false,
+      knownGapProbeVisualOnly: false,
+      knownGapProbeSafetyStopped: false,
+      knownGapProbeStoppedBecauseMaxBudget: false,
+      knownGapProbeBefore: before,
+      knownGapProbeAfter: null,
+      knownGapProbeDelayed: null,
+      knownGapProbeInitialScrollTop: null,
+      knownGapProbeFinalScrollTop: null,
+      knownGapProbeInitialScrollHeight: null,
+      knownGapProbeFinalScrollHeight: null,
+      knownGapProbeTotalScrollHeightDelta: 0,
+      knownGapProbeScrollTopAfterImmediate: null,
+      knownGapProbeScrollTopAfterWait: null,
+      knownGapProbeScrollHeightBefore: null,
+      knownGapProbeScrollHeightAfterImmediate: null,
+      knownGapProbeScrollHeightAfterWait: null,
+      knownGapProbeScrollHeightDelta: 0,
+      knownGapProbeClientHeight: null,
+      knownGapProbeReachedTopThreshold: false,
+      knownGapProbeTrueTopEpsilon: KNOWN_GAP_PROBE_TRUE_TOP_EPSILON,
+      knownGapProbeReachedTrueTop: false,
+      knownGapProbeStableAtTop: false,
+      knownGapProbeStableAtTopWaitMs: KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS,
+      knownGapProbeStableTopConfirmationCount: 0,
+      knownGapProbeStableTopConfirmationsRequired: KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED,
+      knownGapProbeStableTopConfirmationLabel: "0/" + KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED,
+      knownGapProbeEstimatedPhase: "driving-upward",
+      knownGapProbeStableTopResetCount: 0,
+      knownGapProbeStableTopResetReason: null,
+      knownGapProbeDomHydrationDriveEnabled: true,
+      knownGapProbeStoppedAfterStableTopConfirmations: false,
+      knownGapProbeTopNudgeCount: 0,
+      knownGapProbeProgressDetected: false,
+      knownGapProbeProgressReason: null,
+      knownGapProbeBestKnownGap: null,
+      knownGapProbeBestFirstVisibleIndex: null,
+      knownGapProbeProgressEventCount: 0,
+      knownGapProbeProgressHistory: [],
+      knownGapProbeReverseIndexObserved: false,
+      knownGapProbeReverseIndexIgnoredInBackfillMode: false,
+      knownGapProbeReverseIndexIgnoredReason: null,
+      knownGapProbePostHydrationSettleNeeded: false,
+      knownGapProbeLastHydrationAt: null,
+      knownGapProbeLastAnchorCompensationAt: null,
+      knownGapProbeMutationCountBeforeStableWait: null,
+      knownGapProbeMutationCountAfterStableWait: null,
+      knownGapProbeMessageHashBeforeStableWait: null,
+      knownGapProbeMessageHashAfterStableWait: null,
+      knownGapProbeScrollHeightIncreased: false,
+      knownGapProbeAnchorCompensatedScrollTop: false,
+      knownGapProbeTopHydrationCycleDetected: false,
+      knownGapProbeHydrationCycleCount: 0,
+      knownGapProbeAnchorCompensationCount: 0,
+      knownGapProbeMaxTotalMs: KNOWN_GAP_PROBE_MAX_TOTAL_MS,
+      knownGapProbeTotalDurationMs: 0,
+      knownGapProbeMaxTotalSteps: KNOWN_GAP_PROBE_MAX_TOTAL_STEPS,
+      knownGapProbeTotalStepCount: 0,
+      knownGapProbeMaxHydrationCycles: KNOWN_GAP_PROBE_MAX_HYDRATION_CYCLES,
+      knownGapProbeBudgetStopPhase: null,
+      knownGapProbeStartUrl: startSnapshot.url,
+      knownGapProbeEndUrl: null,
+      knownGapProbeStartConversationId: startSnapshot.conversationId,
+      knownGapProbeEndConversationId: null,
+      knownGapProbeStartConversationKey: startSnapshot.conversationKey,
+      knownGapProbeEndConversationKey: null,
+      knownGapProbeStartUserMessageCount: startSnapshot.userMessageCount,
+      knownGapProbeCancelledByConversationChange: false,
+      knownGapProbeCancelReason: null,
+      knownGapProbeJumpToTopAttempted: false,
+      knownGapProbeJumpToTopWorked: false,
+      knownGapProbeStepCount: 0,
+      knownGapProbeStepHistory: [],
+      knownGapProbeCycleHistory: [],
+      knownGapProbeWaitMsAfterTop: null,
+      knownGapProbeTargetCandidates: [],
+      knownGapProbeAttemptHistory: attemptHistory,
+      knownGapProbeEarlierDomAnchorAttempted: false,
+      knownGapProbeEarlierDomAnchorWorked: false,
+      knownGapProbeEarlierDomAnchorCandidateIds: [],
+      knownGapProbeEarlierDomAnchorRejectedIds: []
+    });
+    appendBackfillTraceEvent("known-gap-continuous-probe-start", "start", {
+      beforeIndex: before.firstVisibleDomRegistryIndex,
+      knownGapBefore: before.knownTopGapFromFirstVisible,
+      registryCountBefore: before.registryCount,
+      result: "running",
+      reason: KNOWN_GAP_PROBE_STRATEGY
+    });
+    setupKnownGapProbeUserInterruptGuard(runId);
+    runKnownGapTopHydrationProbeLoop(runId, conversationId, before, attemptHistory).catch((error) => {
+      if (state.backfill && state.backfill.knownGapProbeRunId === runId) {
+        setKnownGapProbePatch({
+          knownGapProbeStatus: "failed",
+          knownGapProbeReason: error && error.message ? error.message : "known-gap-native-probe-error"
+        });
+        cleanupKnownGapProbeUserInterruptGuard();
+      }
+    });
+    return state.backfill;
+  }
+
+  async function runKnownGapTopHydrationProbeLoop(runId, conversationId, initialAudit, attemptHistory) {
+    const startedAtMs = Date.now();
+    const beforeAudit = initialAudit || getBackfillHydrationAuditSnapshot("known-gap-probe-before");
+    const candidates = collectKnownGapProbeScrollTargets();
+    const targetInfos = candidates.map((candidate) => candidate.info);
+    const selectedCandidate = candidates.find((candidate) => {
+      if (!candidate || !candidate.target || !candidate.info || candidate.info.rejected) return false;
+      const info = candidate.info;
+      if ((info.isDocument || info.isWindow) && !info.canScrollUp && !info.canScrollDown) return false;
+      return info.scrollHeight > info.clientHeight + 1000 || info.canScrollUp || info.canScrollDown;
+    });
+
+    appendBackfillTraceEvent("known-gap-continuous-probe-target-selected", "select", {
+      beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+      knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      registryCountBefore: beforeAudit.registryCount,
+      targetDescriptor: selectedCandidate && selectedCandidate.info ? selectedCandidate.info.descriptor : null,
+      result: selectedCandidate ? "selected" : "failed",
+      reason: selectedCandidate ? "scroll-root-selected" : "no-scroll-root-target"
+    });
+
+    if (!selectedCandidate) {
+      setKnownGapProbePatch({
+        knownGapProbeStatus: "failed",
+        knownGapProbeReason: "scroll-root-target-not-found",
+        knownGapProbeTargetCandidates: targetInfos,
+        knownGapProbeStrategy: KNOWN_GAP_PROBE_STRATEGY,
+        knownGapProbeBefore: beforeAudit,
+        knownGapProbeHydrationDetected: false
+      });
+      cleanupKnownGapProbeUserInterruptGuard();
+      return;
+    }
+
+    const target = selectedCandidate.target;
+    const targetDescriptor = selectedCandidate.info.descriptor;
+    const initialMetrics = getBackfillScrollMetrics(target);
+    let lastAudit = beforeAudit;
+    let afterAudit = beforeAudit;
+    let lastAuditAt = 0;
+    let totalSteps = 0;
+    let hydrationCycles = 0;
+    let anchorCompensations = 0;
+    let reachedTopThreshold = Number(initialMetrics.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD;
+    let reachedTrueTop = false;
+    let stableAtTop = false;
+    let stableTopConfirmationCount = 0;
+    let stableTopResetCount = 0;
+    let stableTopResetReason = null;
+    let stoppedBecauseMaxBudget = false;
+    let budgetStopPhase = null;
+    let stoppedAfterStableTopConfirmations = false;
+    let nativeScrollWorked = false;
+    let jumpToTopAttempted = false;
+    let jumpToTopWorked = false;
+    let topNudgeCount = 0;
+    let topHydrationCycleDetected = false;
+    let scrollHeightIncreased = false;
+    let anchorCompensatedScrollTop = false;
+    let progressDetected = false;
+    let progressReason = null;
+    let bestKnownGap = typeof beforeAudit.knownTopGapFromFirstVisible === "number" ? beforeAudit.knownTopGapFromFirstVisible : null;
+    let bestFirstVisibleIndex = typeof beforeAudit.firstVisibleDomRegistryIndex === "number" ? beforeAudit.firstVisibleDomRegistryIndex : null;
+    let progressEventCount = 0;
+    let reverseIndexObserved = false;
+    let reverseIndexIgnoredInBackfillMode = false;
+    let reverseIndexIgnoredReason = null;
+    let postHydrationSettleNeeded = false;
+    let lastHydrationAt = null;
+    let lastAnchorCompensationAt = null;
+    let lastSoftStatusAt = startedAtMs;
+    const stepHistory = [];
+    const cycleHistory = [];
+    const progressHistory = [];
+
+    setKnownGapProbePatch({
+      knownGapProbeStrategy: KNOWN_GAP_PROBE_STRATEGY,
+      knownGapProbeScrollTargetDescriptor: targetDescriptor,
+      knownGapProbeTargetCandidates: targetInfos,
+      knownGapProbeInitialScrollTop: initialMetrics.scrollTop,
+      knownGapProbeFinalScrollTop: initialMetrics.scrollTop,
+      knownGapProbeInitialScrollHeight: initialMetrics.scrollHeight,
+      knownGapProbeFinalScrollHeight: initialMetrics.scrollHeight,
+      knownGapProbeTotalScrollHeightDelta: 0,
+      knownGapProbeClientHeight: initialMetrics.clientHeight,
+      knownGapProbeMaxTotalMs: KNOWN_GAP_PROBE_MAX_TOTAL_MS,
+      knownGapProbeMaxTotalSteps: KNOWN_GAP_PROBE_MAX_TOTAL_STEPS,
+      knownGapProbeMaxHydrationCycles: KNOWN_GAP_PROBE_MAX_HYDRATION_CYCLES,
+      knownGapProbeStableAtTopWaitMs: KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS,
+      knownGapProbeBefore: beforeAudit,
+      knownGapProbeKnownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      knownGapProbeFirstVisibleIndexBefore: beforeAudit.firstVisibleDomRegistryIndex,
+      knownGapProbeFirstRegistryBefore: beforeAudit.firstRegistryMessageId,
+      knownGapProbeRegistryCountBefore: beforeAudit.registryCount,
+      knownGapProbeVisibleDomCountBefore: beforeAudit.visibleDomUserMessageCount,
+      knownGapProbeBestKnownGap: bestKnownGap,
+      knownGapProbeBestFirstVisibleIndex: bestFirstVisibleIndex
+    });
+
+    appendBackfillTraceEvent("known-gap-continuous-probe-start", "start", {
+      beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+      knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      registryCountBefore: beforeAudit.registryCount,
+      targetDescriptor,
+      result: "running",
+      reason: KNOWN_GAP_PROBE_STRATEGY
+    });
+    appendBackfillTraceEvent("known-gap-continuous-probe-long-budget-start", "start", {
+      beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+      knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      registryCountBefore: beforeAudit.registryCount,
+      targetDescriptor,
+      result: "running",
+      reason: "maxTotalMs-" + KNOWN_GAP_PROBE_MAX_TOTAL_MS,
+      scrollAmount: KNOWN_GAP_PROBE_MAX_TOTAL_STEPS
+    });
+
+    const updateRuntimePatch = (patch = {}) => {
+      const currentMetrics = getBackfillScrollMetrics(target);
+      const currentConversationSnapshot = getKnownGapProbeConversationSnapshot();
+      setKnownGapProbePatch({
+        knownGapProbeCount: totalSteps,
+        knownGapProbeTotalStepCount: totalSteps,
+        knownGapProbeStepCount: totalSteps,
+        knownGapProbeHydrationCycleCount: hydrationCycles,
+        knownGapProbeAnchorCompensationCount: anchorCompensations,
+        knownGapProbeReachedTopThreshold: reachedTopThreshold,
+        knownGapProbeReachedTrueTop: reachedTrueTop,
+        knownGapProbeStableAtTop: stableAtTop,
+        knownGapProbeStableTopConfirmationCount: stableTopConfirmationCount,
+        knownGapProbeStableTopConfirmationsRequired: KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED,
+        knownGapProbeStableTopResetCount: stableTopResetCount,
+        knownGapProbeStableTopResetReason: stableTopResetReason,
+        knownGapProbeDomHydrationDriveEnabled: true,
+        knownGapProbeStoppedAfterStableTopConfirmations: stoppedAfterStableTopConfirmations,
+        knownGapProbeTopNudgeCount: topNudgeCount,
+        knownGapProbeProgressDetected: progressDetected,
+        knownGapProbeProgressReason: progressReason,
+        knownGapProbeBestKnownGap: bestKnownGap,
+        knownGapProbeBestFirstVisibleIndex: bestFirstVisibleIndex,
+        knownGapProbeProgressEventCount: progressEventCount,
+        knownGapProbeProgressHistory: progressHistory.slice(-80),
+        knownGapProbeReverseIndexObserved: reverseIndexObserved,
+        knownGapProbeReverseIndexIgnoredInBackfillMode: reverseIndexIgnoredInBackfillMode,
+        knownGapProbeReverseIndexIgnoredReason: reverseIndexIgnoredReason,
+        knownGapProbePostHydrationSettleNeeded: postHydrationSettleNeeded,
+        knownGapProbeLastHydrationAt: lastHydrationAt,
+        knownGapProbeLastAnchorCompensationAt: lastAnchorCompensationAt,
+        knownGapProbeStoppedBecauseMaxBudget: stoppedBecauseMaxBudget,
+        knownGapProbeBudgetStopPhase: budgetStopPhase,
+        knownGapProbeEndUrl: currentConversationSnapshot.url,
+        knownGapProbeEndConversationId: currentConversationSnapshot.conversationId,
+        knownGapProbeEndConversationKey: currentConversationSnapshot.conversationKey,
+        knownGapProbeNativeScrollAttempted: totalSteps > 0 || jumpToTopAttempted,
+        knownGapProbeNativeScrollWorked: nativeScrollWorked,
+        knownGapProbeJumpToTopAttempted: jumpToTopAttempted,
+        knownGapProbeJumpToTopWorked: jumpToTopWorked,
+        knownGapProbeTopHydrationCycleDetected: topHydrationCycleDetected,
+        knownGapProbeScrollHeightIncreased: scrollHeightIncreased,
+        knownGapProbeAnchorCompensatedScrollTop: anchorCompensatedScrollTop,
+        knownGapProbeFinalScrollTop: currentMetrics.scrollTop,
+        knownGapProbeFinalScrollHeight: currentMetrics.scrollHeight,
+        knownGapProbeTotalScrollHeightDelta: Number(currentMetrics.scrollHeight || 0) - Number(initialMetrics.scrollHeight || 0),
+        knownGapProbeTotalDurationMs: Date.now() - startedAtMs,
+        knownGapProbeStepHistory: stepHistory.slice(-120),
+        knownGapProbeCycleHistory: cycleHistory.slice(-40),
+        knownGapProbeTargetCandidates: targetInfos,
+        knownGapProbeAttemptHistory: attemptHistory,
+        ...patch
+      });
+    };
+
+    const recordProbeProgress = (audit, comparison, previousAudit, label) => {
+      if (!audit || !comparison) return false;
+      const reasons = [];
+      const currentGap = typeof audit.knownTopGapFromFirstVisible === "number" ? audit.knownTopGapFromFirstVisible : null;
+      const currentIndex = typeof audit.firstVisibleDomRegistryIndex === "number" ? audit.firstVisibleDomRegistryIndex : null;
+      const previousRegistryCount = previousAudit && typeof previousAudit.registryCount === "number" ? previousAudit.registryCount : beforeAudit.registryCount;
+      const previousFirstRegistry = previousAudit ? previousAudit.firstRegistryMessageId : beforeAudit.firstRegistryMessageId;
+      if (currentGap != null && (bestKnownGap == null || currentGap < bestKnownGap)) {
+        bestKnownGap = currentGap;
+        reasons.push("known-gap-reduced");
+      }
+      if (currentIndex != null && currentIndex >= 0 && (bestFirstVisibleIndex == null || currentIndex < bestFirstVisibleIndex)) {
+        bestFirstVisibleIndex = currentIndex;
+        reasons.push("first-visible-index-improved");
+      }
+      const visibleHeadEarliestIndex = getKnownGapProbeVisibleHeadEarliestIndex(audit);
+      if (visibleHeadEarliestIndex != null && (bestFirstVisibleIndex == null || visibleHeadEarliestIndex < bestFirstVisibleIndex)) {
+        bestFirstVisibleIndex = visibleHeadEarliestIndex;
+        reasons.push("visible-head-earlier-message");
+      }
+      if (Number(audit.registryCount || 0) > Number(previousRegistryCount || 0)) reasons.push("registry-count-increased");
+      if (previousFirstRegistry && audit.firstRegistryMessageId && previousFirstRegistry !== audit.firstRegistryMessageId) reasons.push("first-registry-changed");
+      if (!reasons.length) return false;
+      progressDetected = true;
+      progressReason = reasons.includes("known-gap-reduced") ? "known-gap-reduced" : reasons[0];
+      progressEventCount += 1;
+      const entry = {
+        eventIndex: progressEventCount,
+        label: label || "known-gap-continuous-progress",
+        reasons,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: audit.knownTopGapFromFirstVisible,
+        bestKnownGap,
+        firstVisibleIndexBefore: beforeAudit.firstVisibleDomRegistryIndex,
+        firstVisibleIndexAfter: audit.firstVisibleDomRegistryIndex,
+        bestFirstVisibleIndex,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: audit.registryCount,
+        firstRegistryBefore: beforeAudit.firstRegistryMessageId,
+        firstRegistryAfter: audit.firstRegistryMessageId,
+        timestamp: new Date().toISOString()
+      };
+      progressHistory.push(entry);
+      appendBackfillTraceEvent("known-gap-continuous-probe-progress", "progress", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: audit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: audit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: audit.registryCount,
+        targetDescriptor,
+        result: "progress",
+        reason: progressReason
+      });
+      appendBackfillTraceEvent("known-gap-continuous-probe-progress-continue", "progress", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: audit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: audit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: audit.registryCount,
+        targetDescriptor,
+        result: "continue",
+        reason: "stable-true-top-required"
+      });
+      return true;
+    };
+
+    const recordReverseIndexIgnored = (audit, source) => {
+      if (!audit) return;
+      reverseIndexObserved = true;
+      reverseIndexIgnoredInBackfillMode = true;
+      reverseIndexIgnoredReason = "backfill-mode-stable-true-top-only";
+      postHydrationSettleNeeded = true;
+      appendBackfillTraceEvent("known-gap-continuous-probe-reverse-index-ignored", "audit", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: audit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: audit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: audit.registryCount,
+        targetDescriptor,
+        result: "ignored",
+        reason: reverseIndexIgnoredReason,
+        source: source || "business-audit"
+      });
+      appendBackfillTraceEvent("known-gap-continuous-probe-post-hydration-settle-needed", "audit", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: audit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: audit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: audit.registryCount,
+        targetDescriptor,
+        result: "continue",
+        reason: "post-hydration-settle-needed"
+      });
+    };
+
+    const runBusinessAudit = (label, stepEntry, cycleEntry) => {
+      scanMergeSaveBackfillBatch(label || "manual-known-gap-continuous-probe-audit");
+      const audit = getBackfillHydrationAuditSnapshot(label || "known-gap-continuous-probe-audit");
+      const comparison = compareBackfillHydrationAudits(beforeAudit, audit);
+      const previousAudit = lastAudit || beforeAudit;
+      const progress = recordProbeProgress(audit, comparison, previousAudit, label);
+      const reverseMovement = (typeof beforeAudit.firstVisibleDomRegistryIndex === "number" &&
+        typeof audit.firstVisibleDomRegistryIndex === "number" &&
+        audit.firstVisibleDomRegistryIndex > beforeAudit.firstVisibleDomRegistryIndex) ||
+        didKnownGapProbeVisibleHeadMoveLater(beforeAudit, audit);
+      if (reverseMovement) recordReverseIndexIgnored(audit, label);
+      afterAudit = audit;
+      lastAudit = audit;
+      lastAuditAt = Date.now();
+      if (stepEntry) {
+        stepEntry.businessAuditTriggered = true;
+        stepEntry.knownGapBeforeAudit = beforeAudit.knownTopGapFromFirstVisible;
+        stepEntry.knownGapAfterAudit = audit.knownTopGapFromFirstVisible;
+        stepEntry.firstVisibleIndexBeforeAudit = beforeAudit.firstVisibleDomRegistryIndex;
+        stepEntry.firstVisibleIndexAfterAudit = audit.firstVisibleDomRegistryIndex;
+      }
+      if (cycleEntry) {
+        cycleEntry.businessImproved = progress;
+        cycleEntry.knownGapBefore = beforeAudit.knownTopGapFromFirstVisible;
+        cycleEntry.knownGapAfter = audit.knownTopGapFromFirstVisible;
+        cycleEntry.firstVisibleIndexBefore = beforeAudit.firstVisibleDomRegistryIndex;
+        cycleEntry.firstVisibleIndexAfter = audit.firstVisibleDomRegistryIndex;
+      }
+      appendBackfillTraceEvent("known-gap-continuous-probe-business-audit", "audit", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: audit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: audit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: audit.registryCount,
+        targetDescriptor,
+        result: progress ? "progress" : reverseMovement ? "reverse-index-ignored" : "no-business-improvement",
+        reason: comparison.hydrationDetectionReason
+      });
+      updateRuntimePatch({
+        knownGapProbeAfter: audit,
+        knownGapProbeKnownGapAfter: audit.knownTopGapFromFirstVisible,
+        knownGapProbeFirstVisibleIndexAfter: audit.firstVisibleDomRegistryIndex,
+        knownGapProbeRegistryCountAfter: audit.registryCount,
+        knownGapProbeVisibleDomCountAfter: audit.visibleDomUserMessageCount,
+        knownGapProbeRegistryDelta: Number(audit.registryCount || 0) - Number(beforeAudit.registryCount || 0),
+        knownGapProbeFirstRegistryAfter: audit.firstRegistryMessageId
+      });
+      return { audit, comparison, progress, reverseMovement };
+    };
+
+    const updateSoftStatusIfDue = () => {
+      const now = Date.now();
+      if (now - lastSoftStatusAt < KNOWN_GAP_PROBE_SOFT_STATUS_UPDATE_MS) return;
+      lastSoftStatusAt = now;
+      updateRuntimePatch();
+      appendBackfillTraceEvent("known-gap-continuous-probe-status-update", "status", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: afterAudit ? afterAudit.firstVisibleDomRegistryIndex : null,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: afterAudit ? afterAudit.knownTopGapFromFirstVisible : null,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: afterAudit ? afterAudit.registryCount : null,
+        targetDescriptor,
+        result: getKnownGapProbeEstimatedPhase(state.backfill),
+        reason: getKnownGapProbeStableTopConfirmationLabel(state.backfill)
+      });
+      if (state.backfill && state.backfill.knownGapProbeStatus === "running" && !state.backfill.knownGapProbeCanCopyFinalDebug) {
+        appendBackfillTraceEvent("known-gap-continuous-probe-copy-debug-not-ready", "status", {
+          beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+          afterIndex: afterAudit ? afterAudit.firstVisibleDomRegistryIndex : null,
+          knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+          knownGapAfter: afterAudit ? afterAudit.knownTopGapFromFirstVisible : null,
+          registryCountBefore: beforeAudit.registryCount,
+          registryCountAfter: afterAudit ? afterAudit.registryCount : null,
+          targetDescriptor,
+          result: "not-ready",
+          reason: state.backfill.knownGapProbeEstimatedPhase || "running"
+        });
+      }
+    };
+
+    while (true) {
+      if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+      updateSoftStatusIfDue();
+      const elapsed = Date.now() - startedAtMs;
+      if (elapsed > KNOWN_GAP_PROBE_MAX_TOTAL_MS ||
+        totalSteps >= KNOWN_GAP_PROBE_MAX_TOTAL_STEPS ||
+        hydrationCycles >= KNOWN_GAP_PROBE_MAX_HYDRATION_CYCLES) {
+        stoppedBecauseMaxBudget = true;
+        const budgetMetrics = getBackfillScrollMetrics(target);
+        if (Number(budgetMetrics.scrollTop || 0) > KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD) {
+          budgetStopPhase = "still-driving-upward";
+        } else if (Number(budgetMetrics.scrollTop || 0) <= KNOWN_GAP_PROBE_TRUE_TOP_EPSILON &&
+          stableTopConfirmationCount < KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED) {
+          budgetStopPhase = "stable-top-confirmation-incomplete";
+        } else {
+          budgetStopPhase = "near-top-not-stable";
+        }
+        break;
+      }
+
+      const beforeStep = getBackfillScrollMetrics(target);
+      const nearTopBefore = Number(beforeStep.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD;
+
+      if (!nearTopBefore) {
+        const amount = Math.round(Math.min(
+          Math.max(1800, Number(beforeStep.clientHeight || window.innerHeight || 800) * 3),
+          Math.max(800, Number(beforeStep.scrollTop || 0))
+        ));
+        let method = "unsupported";
+        let errorMessage = null;
+        try {
+          method = scrollKnownGapProbeTargetBy(target, amount);
+        } catch (error) {
+          errorMessage = error && error.message ? error.message : String(error);
+        }
+        await waitForBackfillFrame(KNOWN_GAP_PROBE_STEP_WAIT_MS);
+        if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+        const immediate = getBackfillScrollMetrics(target);
+        await waitForBackfillFrame(KNOWN_GAP_PROBE_POST_SCROLL_WAIT_MS);
+        if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+        const afterWait = getBackfillScrollMetrics(target);
+        totalSteps += 1;
+        const moved = Math.abs(Number(immediate.scrollTop || 0) - Number(beforeStep.scrollTop || 0)) > 1 ||
+          Math.abs(Number(immediate.windowScrollY || 0) - Number(beforeStep.windowScrollY || 0)) > 1;
+        nativeScrollWorked = nativeScrollWorked || moved;
+        const scrollHeightDelta = Number(afterWait.scrollHeight || 0) - Number(beforeStep.scrollHeight || 0);
+        const hydrationByScrollHeight = scrollHeightDelta > KNOWN_GAP_PROBE_SCROLLHEIGHT_GROWTH_THRESHOLD;
+        const anchorCompensated = hydrationByScrollHeight && Number(afterWait.scrollTop || 0) > Number(beforeStep.scrollTop || 0);
+        scrollHeightIncreased = scrollHeightIncreased || hydrationByScrollHeight;
+        topHydrationCycleDetected = topHydrationCycleDetected || hydrationByScrollHeight;
+        anchorCompensatedScrollTop = anchorCompensatedScrollTop || anchorCompensated;
+        if (hydrationByScrollHeight) lastHydrationAt = new Date().toISOString();
+        if (anchorCompensated) {
+          anchorCompensations += 1;
+          lastAnchorCompensationAt = new Date().toISOString();
+        }
+        reachedTopThreshold = reachedTopThreshold || Number(immediate.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD ||
+          Number(afterWait.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD;
+
+        const stepEntry = {
+          stepIndex: totalSteps,
+          cycleIndex: hydrationCycles,
+          method,
+          amount,
+          scrollTopBefore: beforeStep.scrollTop,
+          scrollTopAfterImmediate: immediate.scrollTop,
+          scrollTopAfterWait: afterWait.scrollTop,
+          scrollHeightBefore: beforeStep.scrollHeight,
+          scrollHeightAfterImmediate: immediate.scrollHeight,
+          scrollHeightAfterWait: afterWait.scrollHeight,
+          scrollHeightDelta,
+          nearTopBefore,
+          nearTopAfter: Number(afterWait.scrollTop || 0) <= KNOWN_GAP_NATIVE_PROBE_TOP_THRESHOLD,
+          hydrationDetectedByScrollHeight: hydrationByScrollHeight,
+          anchorCompensated,
+          businessAuditTriggered: false,
+          knownGapBeforeAudit: null,
+          knownGapAfterAudit: null,
+          firstVisibleIndexBeforeAudit: null,
+          firstVisibleIndexAfterAudit: null,
+          timestamp: new Date().toISOString(),
+          errorMessage
+        };
+        stepHistory.push(stepEntry);
+        Object.assign(selectedCandidate.info, {
+          methodTried: method,
+          workedByScrollMetric: moved,
+          scrollTop: afterWait.scrollTop,
+          scrollTopBefore: beforeStep.scrollTop,
+          scrollTopAfter: afterWait.scrollTop,
+          scrollTopAfterImmediate: immediate.scrollTop,
+          scrollTopAfterWait: afterWait.scrollTop,
+          scrollHeight: afterWait.scrollHeight,
+          scrollHeightBefore: beforeStep.scrollHeight,
+          scrollHeightAfterImmediate: immediate.scrollHeight,
+          scrollHeightAfterWait: afterWait.scrollHeight,
+          errorMessage
+        });
+        appendBackfillTraceEvent("known-gap-continuous-probe-step", "scroll-step", {
+          beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+          knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+          registryCountBefore: beforeAudit.registryCount,
+          targetDescriptor,
+          scrollMethod: method,
+          scrollAmount: amount,
+          result: moved ? "moved" : "no-movement",
+          reason: hydrationByScrollHeight ? "scrollheight-increased" : "continuous-upward-step"
+        });
+        if (hydrationByScrollHeight) {
+          hydrationCycles += 1;
+          const cycleStart = Date.now();
+          const cycleEntry = {
+            cycleIndex: hydrationCycles,
+            reason: "scrollheight-increased",
+            scrollTopStart: beforeStep.scrollTop,
+            scrollTopEnd: afterWait.scrollTop,
+            scrollHeightStart: beforeStep.scrollHeight,
+            scrollHeightEnd: afterWait.scrollHeight,
+            scrollHeightDelta,
+            stepCount: totalSteps,
+            hydrationCycleDetected: true,
+            anchorCompensationDetected: anchorCompensated,
+            reachedTopThreshold,
+            stableAtTop: false,
+            businessImproved: false,
+            knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+            knownGapAfter: null,
+            firstVisibleIndexBefore: beforeAudit.firstVisibleDomRegistryIndex,
+            firstVisibleIndexAfter: null,
+            durationMs: 0
+          };
+          cycleHistory.push(cycleEntry);
+          appendBackfillTraceEvent("known-gap-continuous-probe-scrollheight-increased", "cycle", {
+            beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+            knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+            registryCountBefore: beforeAudit.registryCount,
+            targetDescriptor,
+            scrollMethod: method,
+            scrollAmount: amount,
+            result: "scrollheight-increased",
+            reason: "delta-" + Math.round(scrollHeightDelta)
+          });
+          if (anchorCompensated) {
+            appendBackfillTraceEvent("known-gap-continuous-probe-anchor-compensated", "cycle", {
+              beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+              knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+              registryCountBefore: beforeAudit.registryCount,
+              targetDescriptor,
+              scrollMethod: method,
+              result: "anchor-compensated",
+              reason: "scrollTop-increased-after-height-growth"
+            });
+          }
+          await waitForBackfillFrame(KNOWN_GAP_PROBE_HYDRATION_WAIT_MS);
+          if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+          runBusinessAudit("manual-known-gap-continuous-hydration-cycle", stepEntry, cycleEntry);
+          cycleEntry.durationMs = Date.now() - cycleStart;
+          updateRuntimePatch({
+            knownGapProbeHydrationDetected: progressDetected,
+            knownGapProbeVisualOnly: topHydrationCycleDetected && !progressDetected
+          });
+          continue;
+        }
+
+        if (Date.now() - lastAuditAt >= KNOWN_GAP_PROBE_BUSINESS_AUDIT_THROTTLE_MS) {
+          runBusinessAudit("manual-known-gap-continuous-throttled-audit", stepEntry, null);
+        }
+        updateRuntimePatch({
+          knownGapProbeScrollTopBefore: beforeStep.scrollTop,
+          knownGapProbeScrollTopAfterImmediate: immediate.scrollTop,
+          knownGapProbeScrollTopAfterWait: afterWait.scrollTop,
+          knownGapProbeScrollTopAfter: afterWait.scrollTop,
+          knownGapProbeScrollHeightBefore: beforeStep.scrollHeight,
+          knownGapProbeScrollHeightAfterImmediate: immediate.scrollHeight,
+          knownGapProbeScrollHeightAfterWait: afterWait.scrollHeight,
+          knownGapProbeScrollHeightDelta: scrollHeightDelta,
+          knownGapProbeScrollMethod: method,
+          knownGapProbeScrollAmount: amount,
+          knownGapProbeWaitMsAfterTop: null
+        });
+        continue;
+      }
+
+      reachedTopThreshold = true;
+      appendBackfillTraceEvent("known-gap-continuous-probe-reached-top-threshold", "top-threshold", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        targetDescriptor,
+        result: "reached-top-threshold",
+        reason: "scrollTop<=200"
+      });
+      topNudgeCount += 1;
+      jumpToTopAttempted = true;
+      markProgrammaticScroll();
+      try {
+        if (target.node && typeof target.node.scrollTop === "number") {
+          target.node.scrollTop = 0;
+        } else if (target.node && typeof target.node.scrollBy === "function") {
+          target.node.scrollBy({ top: -800, behavior: "auto" });
+        }
+      } catch (_) {}
+      await waitForBackfillFrame(120);
+      if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+      const stableStart = getBackfillScrollMetrics(target);
+      jumpToTopWorked = jumpToTopWorked || Number(stableStart.scrollTop || 0) <= KNOWN_GAP_PROBE_TRUE_TOP_EPSILON;
+      const stableAuditBefore = getBackfillHydrationAuditSnapshot("known-gap-stable-top-before");
+      const mutationCountBeforeStableWait = Number(DEBUG_STATE.mutationTriggerCount || 0);
+      const messageHashBeforeStableWait = state.messageHash || "";
+      appendBackfillTraceEvent("known-gap-continuous-probe-stable-at-top-wait", "wait", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        targetDescriptor,
+        result: "waiting",
+        reason: "stable-top-wait"
+      });
+      await waitForBackfillFrame(KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS);
+      if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+      const stableAfter = getBackfillScrollMetrics(target);
+      await waitForBackfillFrame(KNOWN_GAP_PROBE_TOP_NUDGE_WAIT_MS);
+      if (cancelKnownGapProbeIfNotCurrent(runId, conversationId)) return;
+      const stableAfterExtra = getBackfillScrollMetrics(target);
+      const stableAuditResult = runBusinessAudit("manual-known-gap-continuous-stable-top-check", null, null);
+      const mutationCountAfterStableWait = Number(DEBUG_STATE.mutationTriggerCount || 0);
+      const messageHashAfterStableWait = state.messageHash || "";
+      jumpToTopWorked = jumpToTopWorked || Number(stableAfterExtra.scrollTop || 0) <= KNOWN_GAP_PROBE_TRUE_TOP_EPSILON;
+      const stableScrollHeightDelta = Number(stableAfterExtra.scrollHeight || 0) - Number(stableStart.scrollHeight || 0);
+      const stableHeightIncreased = stableScrollHeightDelta > KNOWN_GAP_PROBE_SCROLLHEIGHT_GROWTH_THRESHOLD;
+      const stableAnchorCompensated = stableHeightIncreased && Number(stableAfterExtra.scrollTop || 0) > Number(stableStart.scrollTop || 0) + 20;
+      const stableVisibleDomChanged = Number(stableAuditResult.audit.visibleDomUserMessageCount || 0) !== Number(stableAuditBefore.visibleDomUserMessageCount || 0);
+      const stableRegistryChanged = Number(stableAuditResult.audit.registryCount || 0) !== Number(stableAuditBefore.registryCount || 0);
+      const stableMessageHashChanged = messageHashAfterStableWait !== messageHashBeforeStableWait;
+      const stableMutationIncreased = mutationCountAfterStableWait > mutationCountBeforeStableWait;
+      const stableTrueTop = Number(stableAfterExtra.scrollTop || 0) <= KNOWN_GAP_PROBE_TRUE_TOP_EPSILON;
+      Object.assign(selectedCandidate.info, {
+        methodTried: jumpToTopAttempted ? "scrollTop-set" : selectedCandidate.info.methodTried,
+        workedByScrollMetric: selectedCandidate.info.workedByScrollMetric || jumpToTopWorked,
+        scrollTop: stableAfterExtra.scrollTop,
+        scrollTopBefore: stableStart.scrollTop,
+        scrollTopAfter: stableAfterExtra.scrollTop,
+        scrollTopAfterImmediate: stableAfter.scrollTop,
+        scrollTopAfterWait: stableAfterExtra.scrollTop,
+        scrollHeight: stableAfterExtra.scrollHeight,
+        scrollHeightBefore: stableStart.scrollHeight,
+        scrollHeightAfterImmediate: stableAfter.scrollHeight,
+        scrollHeightAfterWait: stableAfterExtra.scrollHeight
+      });
+      scrollHeightIncreased = scrollHeightIncreased || stableHeightIncreased;
+      topHydrationCycleDetected = topHydrationCycleDetected || stableHeightIncreased;
+      anchorCompensatedScrollTop = anchorCompensatedScrollTop || stableAnchorCompensated;
+      if (stableHeightIncreased) lastHydrationAt = new Date().toISOString();
+      if (stableAnchorCompensated) {
+        anchorCompensations += 1;
+        lastAnchorCompensationAt = new Date().toISOString();
+      }
+      updateRuntimePatch({
+        knownGapProbeMutationCountBeforeStableWait: mutationCountBeforeStableWait,
+        knownGapProbeMutationCountAfterStableWait: mutationCountAfterStableWait,
+        knownGapProbeMessageHashBeforeStableWait: messageHashBeforeStableWait,
+        knownGapProbeMessageHashAfterStableWait: messageHashAfterStableWait,
+        knownGapProbeScrollTopBefore: stableStart.scrollTop,
+        knownGapProbeScrollTopAfterImmediate: stableAfter.scrollTop,
+        knownGapProbeScrollTopAfterWait: stableAfterExtra.scrollTop,
+        knownGapProbeScrollTopAfter: stableAfterExtra.scrollTop,
+        knownGapProbeScrollHeightBefore: stableStart.scrollHeight,
+        knownGapProbeScrollHeightAfterImmediate: stableAfter.scrollHeight,
+        knownGapProbeScrollHeightAfterWait: stableAfterExtra.scrollHeight,
+        knownGapProbeScrollHeightDelta: stableScrollHeightDelta,
+        knownGapProbeWaitMsAfterTop: KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS
+      });
+
+      const stableResetReasons = [];
+      if (stableHeightIncreased) stableResetReasons.push("scrollheight-increased");
+      if (!stableTrueTop) stableResetReasons.push("scrolltop-rebounded");
+      if (stableVisibleDomChanged) stableResetReasons.push("visible-dom-count-changed");
+      if (stableRegistryChanged) stableResetReasons.push("registry-count-changed");
+      if (stableMessageHashChanged) stableResetReasons.push("message-hash-changed");
+      if (stableMutationIncreased) stableResetReasons.push("mutation-count-increased");
+      appendBackfillTraceEvent("known-gap-continuous-probe-stable-check", "stable-check", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+        knownGapBefore: stableAuditBefore.knownTopGapFromFirstVisible,
+        knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+        registryCountBefore: stableAuditBefore.registryCount,
+        registryCountAfter: stableAuditResult.audit.registryCount,
+        targetDescriptor,
+        result: stableResetReasons.length ? "unstable" : "stable",
+        reason: stableResetReasons.join(",") || "stable-check-passed"
+      });
+
+      if (stableResetReasons.length) {
+        stableTopConfirmationCount = 0;
+        stableTopResetCount += 1;
+        stableTopResetReason = stableResetReasons.join(",");
+        if (stableHeightIncreased || stableVisibleDomChanged || stableRegistryChanged || stableMessageHashChanged || stableMutationIncreased) {
+          topHydrationCycleDetected = true;
+          lastHydrationAt = new Date().toISOString();
+        }
+        if (beforeAudit.knownTopGapFromFirstVisible === 0 && (stableHeightIncreased || stableVisibleDomChanged || stableRegistryChanged || stableMessageHashChanged)) {
+          setKnownGapProbePatch({
+            knownGapProbeReason: "dom-hydration-observed-without-known-gap",
+            knownGapProbeVisualOnly: !progressDetected,
+            knownGapProbeHydrationDetected: progressDetected
+          });
+        }
+        hydrationCycles += 1;
+        const cycleStart = Date.now();
+        const cycleEntry = {
+          cycleIndex: hydrationCycles,
+          reason: stableTopResetReason,
+          scrollTopStart: stableStart.scrollTop,
+          scrollTopEnd: stableAfterExtra.scrollTop,
+          scrollHeightStart: stableStart.scrollHeight,
+          scrollHeightEnd: stableAfterExtra.scrollHeight,
+          scrollHeightDelta: stableScrollHeightDelta,
+          stepCount: totalSteps,
+          hydrationCycleDetected: stableHeightIncreased || stableVisibleDomChanged || stableRegistryChanged || stableMessageHashChanged || stableMutationIncreased,
+          anchorCompensationDetected: stableAnchorCompensated,
+          reachedTopThreshold: true,
+          stableAtTop: false,
+          businessImproved: false,
+          knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+          knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+          firstVisibleIndexBefore: beforeAudit.firstVisibleDomRegistryIndex,
+          firstVisibleIndexAfter: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+          durationMs: 0
+        };
+        cycleHistory.push(cycleEntry);
+        appendBackfillTraceEvent(stableHeightIncreased ? "known-gap-continuous-probe-scrollheight-increased" : "known-gap-continuous-probe-business-audit", "stable-top-reset", {
+          beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+          afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+          knownGapBefore: stableAuditBefore.knownTopGapFromFirstVisible,
+          knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+          registryCountBefore: beforeAudit.registryCount,
+          registryCountAfter: stableAuditResult.audit.registryCount,
+          targetDescriptor,
+          result: "stable-top-reset",
+          reason: stableTopResetReason
+        });
+        appendBackfillTraceEvent("known-gap-continuous-probe-stable-check-reset", "stable-check", {
+          beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+          afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+          knownGapBefore: stableAuditBefore.knownTopGapFromFirstVisible,
+          knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+          registryCountBefore: stableAuditBefore.registryCount,
+          registryCountAfter: stableAuditResult.audit.registryCount,
+          targetDescriptor,
+          result: "reset",
+          reason: stableTopResetReason
+        });
+        if (stableAnchorCompensated) {
+          appendBackfillTraceEvent("known-gap-continuous-probe-anchor-compensated", "stable-top-cycle", {
+            beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+            knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+            registryCountBefore: beforeAudit.registryCount,
+            targetDescriptor,
+            result: "anchor-compensated",
+            reason: "stable-top-scrollTop-rebounded"
+          });
+        }
+        cycleEntry.durationMs = Date.now() - cycleStart;
+        updateRuntimePatch({
+          knownGapProbeReason: beforeAudit.knownTopGapFromFirstVisible === 0 ? "dom-hydration-observed-without-known-gap" : state.backfill.knownGapProbeReason,
+          knownGapProbeHydrationDetected: progressDetected,
+          knownGapProbeVisualOnly: !progressDetected
+        });
+        continue;
+      }
+
+      if (stableTrueTop) {
+        stableTopConfirmationCount += 1;
+        stableTopResetReason = null;
+        updateRuntimePatch({
+          knownGapProbeScrollTopBefore: stableStart.scrollTop,
+          knownGapProbeScrollTopAfterImmediate: stableAfter.scrollTop,
+          knownGapProbeScrollTopAfterWait: stableAfterExtra.scrollTop,
+          knownGapProbeScrollTopAfter: stableAfterExtra.scrollTop,
+          knownGapProbeScrollHeightBefore: stableStart.scrollHeight,
+          knownGapProbeScrollHeightAfterImmediate: stableAfter.scrollHeight,
+          knownGapProbeScrollHeightAfterWait: stableAfterExtra.scrollHeight,
+          knownGapProbeScrollHeightDelta: stableScrollHeightDelta,
+          knownGapProbeWaitMsAfterTop: KNOWN_GAP_PROBE_STABLE_TOP_WAIT_MS
+        });
+        appendBackfillTraceEvent("known-gap-continuous-probe-stable-check-confirmed", "stable-check", {
+          beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+          afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+          knownGapBefore: stableAuditBefore.knownTopGapFromFirstVisible,
+          knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+          registryCountBefore: stableAuditBefore.registryCount,
+          registryCountAfter: stableAuditResult.audit.registryCount,
+          targetDescriptor,
+          result: "confirmed-" + stableTopConfirmationCount,
+          reason: "stable-true-top-check-passed"
+        });
+        appendBackfillTraceEvent("known-gap-continuous-probe-stable-confirmation-progress", "stable-check", {
+          beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+          afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+          knownGapBefore: stableAuditBefore.knownTopGapFromFirstVisible,
+          knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+          registryCountBefore: stableAuditBefore.registryCount,
+          registryCountAfter: stableAuditResult.audit.registryCount,
+          targetDescriptor,
+          result: stableTopConfirmationCount + "/" + KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED,
+          reason: "stable-true-top-confirmation-progress"
+        });
+        if (stableTopConfirmationCount < KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED) {
+          appendBackfillTraceEvent("known-gap-continuous-probe-copy-debug-not-ready", "stable-check", {
+            beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+            afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+            knownGapBefore: stableAuditBefore.knownTopGapFromFirstVisible,
+            knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+            registryCountBefore: stableAuditBefore.registryCount,
+            registryCountAfter: stableAuditResult.audit.registryCount,
+            targetDescriptor,
+            result: "not-ready",
+            reason: stableTopConfirmationCount + "/" + KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED
+          });
+        }
+        if (stableTopConfirmationCount >= KNOWN_GAP_PROBE_STABLE_TOP_CONFIRMATIONS_REQUIRED) {
+          reachedTrueTop = true;
+          stableAtTop = true;
+          stoppedAfterStableTopConfirmations = true;
+          updateRuntimePatch({
+            knownGapProbeStatus: "success",
+            knownGapProbeReason: "stable-true-top-confirmed",
+            knownGapProbeHydrationDetected: progressDetected,
+            knownGapProbeVisualOnly: !!topHydrationCycleDetected && !progressDetected,
+            knownGapProbeReachedTrueTop: true,
+            knownGapProbeStableAtTop: true,
+            knownGapProbeStoppedAfterStableTopConfirmations: true,
+            knownGapProbeStoppedBecauseMaxBudget: false,
+            knownGapProbeBudgetStopPhase: null
+          });
+          appendBackfillTraceEvent("known-gap-continuous-probe-stable-true-top-success", "stable-top-confirmed", {
+            beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+            afterIndex: stableAuditResult.audit.firstVisibleDomRegistryIndex,
+            knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+            knownGapAfter: stableAuditResult.audit.knownTopGapFromFirstVisible,
+            registryCountBefore: beforeAudit.registryCount,
+            registryCountAfter: stableAuditResult.audit.registryCount,
+            targetDescriptor,
+            result: "success",
+            reason: "stable-true-top-confirmed"
+          });
+          cleanupKnownGapProbeUserInterruptGuard();
+          return;
+        }
+        continue;
+      }
+      stableTopConfirmationCount = 0;
+      stableTopResetCount += 1;
+      stableTopResetReason = "scrolltop-rebounded";
+      updateRuntimePatch();
+    }
+
+    updateRuntimePatch({
+      knownGapProbeStatus: "failed",
+      knownGapProbeReason: stoppedBecauseMaxBudget ? "max-budget-before-stable-true-top" :
+        topHydrationCycleDetected ? "top-hydration-cycle-detected-but-no-known-gap-improvement" : "native-scroll-no-hydration",
+      knownGapProbeHydrationDetected: progressDetected,
+      knownGapProbeVisualOnly: !!topHydrationCycleDetected && !progressDetected,
+      knownGapProbeStoppedBecauseMaxBudget: stoppedBecauseMaxBudget
+    });
+    appendBackfillTraceEvent(stoppedBecauseMaxBudget ? "known-gap-continuous-probe-max-budget-before-stable-true-top" : "known-gap-continuous-probe-failed", "finish", {
+      beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+      afterIndex: afterAudit ? afterAudit.firstVisibleDomRegistryIndex : null,
+      knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      knownGapAfter: afterAudit ? afterAudit.knownTopGapFromFirstVisible : null,
+      registryCountBefore: beforeAudit.registryCount,
+      registryCountAfter: afterAudit ? afterAudit.registryCount : null,
+      targetDescriptor,
+      result: "failed",
+      reason: stoppedBecauseMaxBudget ? "max-budget-before-stable-true-top" :
+        topHydrationCycleDetected ? "top-hydration-cycle-detected-but-no-known-gap-improvement" : "native-scroll-no-hydration"
+    });
+    cleanupKnownGapProbeUserInterruptGuard();
+  }
+
   function cancelCurrentConversationBackfill(reason) {
     const status = state.backfill && state.backfill.status;
     if (status !== "running") {
@@ -2521,6 +4435,12 @@
   function startCurrentConversationBackfill() {
     const status = state.backfill && state.backfill.status;
     if (status === "running" || status === "cancelling") return state.backfill;
+    if (state.backfill && state.backfill.knownGapProbeStatus === "running") {
+      setKnownGapProbePatch({
+        knownGapProbeReason: "known-gap-probe-already-running"
+      });
+      return state.backfill;
+    }
 
     const conversationId = getConversationId() || state.currentConversationId;
     const runId = "backfill-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
@@ -10502,11 +12422,12 @@
 
     const backfillStatus = state.backfill && state.backfill.status;
     const backfillRunning = backfillStatus === "running" || backfillStatus === "cancelling";
+    const knownGapProbeRunning = state.backfill && state.backfill.knownGapProbeStatus === "running";
     const backfill = document.createElement("button");
     backfill.type = "button";
     backfill.className = "gpn-mini-btn";
     backfill.textContent = "Backfill Current Conversation";
-    backfill.disabled = backfillRunning;
+    backfill.disabled = backfillRunning || knownGapProbeRunning;
     backfill.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -10524,10 +12445,22 @@
       cancelCurrentConversationBackfill("user-cancel");
     });
 
+    const knownGapProbe = document.createElement("button");
+    knownGapProbe.type = "button";
+    knownGapProbe.className = "gpn-mini-btn";
+    knownGapProbe.textContent = "Probe Known Gap Top (Experimental)";
+    knownGapProbe.disabled = backfillRunning || knownGapProbeRunning;
+    knownGapProbe.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      startKnownGapTopHydrationProbe();
+    });
+
     actions.appendChild(copy);
     actions.appendChild(print);
     actions.appendChild(backfill);
     actions.appendChild(cancelBackfill);
+    actions.appendChild(knownGapProbe);
 
     const pre = document.createElement("pre");
     pre.className = "gpn-debug-pre";
