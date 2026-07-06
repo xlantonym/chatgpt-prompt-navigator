@@ -938,6 +938,34 @@
       rawAnchorFailureReason: null,
       knownTopGapAtStop: null,
       safeAnchorStalledKnownGap: false,
+      backfillCurrentEngine: null,
+      backfillCurrentMode: null,
+      backfillCurrentDriveInvoked: false,
+      backfillCurrentDriveStatus: null,
+      backfillCurrentDriveReason: null,
+      legacyBackfillUsed: false,
+      legacyBackfillAvailable: true,
+      legacyBackfillReason: null,
+      backfillRegistryCountBefore: null,
+      backfillRegistryCountAfter: null,
+      backfillVisibleDomCountBefore: null,
+      backfillVisibleDomCountAfter: null,
+      backfillFirstRegistryBefore: null,
+      backfillFirstRegistryAfter: null,
+      backfillFirstVisibleDomBefore: null,
+      backfillFirstVisibleDomAfter: null,
+      backfillRetainedOffscreenCount: null,
+      backfillRegistrySaveAttempted: false,
+      backfillRegistrySaveCompleted: false,
+      backfillReturnPositionCaptured: false,
+      backfillReturnPositionAttempted: false,
+      backfillReturnPositionSucceeded: false,
+      backfillReturnPositionSkippedReason: null,
+      backfillReturnPositionDescriptor: null,
+      backfillReturnPositionScrollTopBefore: null,
+      backfillReturnPositionScrollTopAfter: null,
+      backfillReturnPositionWindowYBefore: null,
+      backfillReturnPositionWindowYAfter: null,
       knownGapProbeStatus: "idle",
       knownGapProbeRunId: null,
       knownGapProbeIsRunning: false,
@@ -1695,6 +1723,34 @@
       rawAnchorFailureReason: backfill.rawAnchorFailureReason || null,
       knownTopGapAtStop: backfill.knownTopGapAtStop,
       safeAnchorStalledKnownGap: !!backfill.safeAnchorStalledKnownGap,
+      backfillCurrentEngine: backfill.backfillCurrentEngine || null,
+      backfillCurrentMode: backfill.backfillCurrentMode || null,
+      backfillCurrentDriveInvoked: !!backfill.backfillCurrentDriveInvoked,
+      backfillCurrentDriveStatus: backfill.backfillCurrentDriveStatus || null,
+      backfillCurrentDriveReason: backfill.backfillCurrentDriveReason || null,
+      legacyBackfillUsed: !!backfill.legacyBackfillUsed,
+      legacyBackfillAvailable: backfill.legacyBackfillAvailable !== false,
+      legacyBackfillReason: backfill.legacyBackfillReason || null,
+      backfillRegistryCountBefore: backfill.backfillRegistryCountBefore,
+      backfillRegistryCountAfter: backfill.backfillRegistryCountAfter,
+      backfillVisibleDomCountBefore: backfill.backfillVisibleDomCountBefore,
+      backfillVisibleDomCountAfter: backfill.backfillVisibleDomCountAfter,
+      backfillFirstRegistryBefore: backfill.backfillFirstRegistryBefore || null,
+      backfillFirstRegistryAfter: backfill.backfillFirstRegistryAfter || null,
+      backfillFirstVisibleDomBefore: backfill.backfillFirstVisibleDomBefore || null,
+      backfillFirstVisibleDomAfter: backfill.backfillFirstVisibleDomAfter || null,
+      backfillRetainedOffscreenCount: backfill.backfillRetainedOffscreenCount,
+      backfillRegistrySaveAttempted: !!backfill.backfillRegistrySaveAttempted,
+      backfillRegistrySaveCompleted: !!backfill.backfillRegistrySaveCompleted,
+      backfillReturnPositionCaptured: !!backfill.backfillReturnPositionCaptured,
+      backfillReturnPositionAttempted: !!backfill.backfillReturnPositionAttempted,
+      backfillReturnPositionSucceeded: !!backfill.backfillReturnPositionSucceeded,
+      backfillReturnPositionSkippedReason: backfill.backfillReturnPositionSkippedReason || null,
+      backfillReturnPositionDescriptor: backfill.backfillReturnPositionDescriptor || null,
+      backfillReturnPositionScrollTopBefore: backfill.backfillReturnPositionScrollTopBefore,
+      backfillReturnPositionScrollTopAfter: backfill.backfillReturnPositionScrollTopAfter,
+      backfillReturnPositionWindowYBefore: backfill.backfillReturnPositionWindowYBefore,
+      backfillReturnPositionWindowYAfter: backfill.backfillReturnPositionWindowYAfter,
       knownGapProbeStatus: backfill.knownGapProbeStatus || "idle",
       knownGapProbeRunId: backfill.knownGapProbeRunId || null,
       knownGapProbeIsRunning: backfill.knownGapProbeStatus === "running",
@@ -1933,6 +1989,69 @@
     if (target.node) target.node.scrollTop = Math.max(0, Number(target.node.scrollTop || 0) - amount);
   }
 
+  function captureBackfillReturnPosition() {
+    const target = findBackfillScrollTarget();
+    if (!target) {
+      return {
+        captured: false,
+        reason: "no-scroll-target"
+      };
+    }
+    const metrics = getBackfillScrollMetrics(target);
+    return {
+      captured: true,
+      target,
+      descriptor: describeBackfillScrollTarget(target),
+      scrollTop: metrics.scrollTop,
+      windowScrollY: metrics.windowScrollY,
+      scrollHeight: metrics.scrollHeight,
+      clientHeight: metrics.clientHeight
+    };
+  }
+
+  function restoreBackfillReturnPosition(position) {
+    if (!position || !position.captured || !position.target) {
+      return {
+        attempted: false,
+        succeeded: false,
+        reason: position && position.reason ? position.reason : "return-position-not-captured"
+      };
+    }
+    const before = getBackfillScrollMetrics(position.target);
+    try {
+      markProgrammaticScroll();
+      if (position.target.isDocument) {
+        window.scrollTo({ top: Number(position.scrollTop || position.windowScrollY || 0), behavior: "auto" });
+      } else if (position.target.node && typeof position.target.node.scrollTop === "number") {
+        position.target.node.scrollTop = Math.max(0, Number(position.scrollTop || 0));
+      } else {
+        return {
+          attempted: true,
+          succeeded: false,
+          reason: "return-target-not-scrollable",
+          before,
+          after: before
+        };
+      }
+      const after = getBackfillScrollMetrics(position.target);
+      return {
+        attempted: true,
+        succeeded: Math.abs(Number(after.scrollTop || 0) - Number(position.scrollTop || 0)) <= 8,
+        reason: "scrollTop-restore",
+        before,
+        after
+      };
+    } catch (error) {
+      return {
+        attempted: true,
+        succeeded: false,
+        reason: error && error.message ? error.message : "return-position-error",
+        before,
+        after: getBackfillScrollMetrics(position.target)
+      };
+    }
+  }
+
   function cleanupKnownGapProbeUserInterruptGuard() {
     if (typeof state.knownGapProbeInterruptCleanup === "function") state.knownGapProbeInterruptCleanup();
     state.knownGapProbeInterruptCleanup = null;
@@ -1973,6 +2092,7 @@
       state.backfill &&
       state.backfill.knownGapProbeRunId === runId &&
       state.backfill.knownGapProbeStatus === "running" &&
+      state.backfill.cancelRequested !== true &&
       !getKnownGapProbeConversationChangeReason(startSnapshot, currentSnapshot)
     );
   }
@@ -1989,9 +2109,11 @@
         userMessageCount: state.backfill.knownGapProbeStartUserMessageCount
       };
       const changeReason = getKnownGapProbeConversationChangeReason(startSnapshot, currentSnapshot);
-      const reason = changeReason ? "conversation-changed-during-known-gap-probe" : "known-gap-probe-cancelled";
+      const requestedCancel = state.backfill.cancelRequested === true;
+      const reason = changeReason ? "conversation-changed-during-known-gap-probe" :
+        requestedCancel ? (state.backfill.lastError || "cancelled") : "known-gap-probe-cancelled";
       setKnownGapProbePatch({
-        knownGapProbeStatus: changeReason ? "cancelled" : "failed",
+        knownGapProbeStatus: changeReason || requestedCancel ? "cancelled" : "failed",
         knownGapProbeReason: reason,
         knownGapProbeEndUrl: currentSnapshot.url,
         knownGapProbeEndConversationId: currentSnapshot.conversationId,
@@ -2000,7 +2122,7 @@
         knownGapProbeCancelReason: changeReason || reason
       });
       appendBackfillTraceEvent(changeReason ? "known-gap-continuous-probe-conversation-changed-cancelled" : "known-gap-native-probe-failed", "cancel", {
-        result: changeReason ? "cancelled" : "failed",
+        result: changeReason || requestedCancel ? "cancelled" : "failed",
         reason
       });
     }
@@ -3589,6 +3711,22 @@
   }
 
   async function runKnownGapTopHydrationProbeLoop(runId, conversationId, initialAudit, attemptHistory) {
+    return runContinuousUpwardHydrationDrive({
+      mode: "debug-probe",
+      runId,
+      conversationId,
+      initialAudit,
+      attemptHistory
+    });
+  }
+
+  async function runContinuousUpwardHydrationDrive(options = {}) {
+    const mode = options.mode || "debug-probe";
+    const isBackfillCurrentMode = mode === "backfill-current";
+    const runId = options.runId;
+    const conversationId = options.conversationId;
+    const initialAudit = options.initialAudit;
+    const attemptHistory = options.attemptHistory || [];
     const startedAtMs = Date.now();
     const beforeAudit = initialAudit || getBackfillHydrationAuditSnapshot("known-gap-probe-before");
     const candidates = collectKnownGapProbeScrollTargets();
@@ -4442,10 +4580,211 @@
       return state.backfill;
     }
 
+    const startSnapshot = getKnownGapProbeConversationSnapshot();
+    const conversationId = startSnapshot.conversationKey || getConversationId() || state.currentConversationId;
+    const runId = "backfill-current-drive-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+    const returnPosition = captureBackfillReturnPosition();
+    const beforeAudit = getBackfillHydrationAuditSnapshot("backfill-current-before");
+
+    resetBackfillState("start-current-conversation-backfill-drive");
+    setBackfillStatus("running", {
+      runId,
+      cancelRequested: false,
+      startedAt: new Date().toISOString(),
+      finishedAt: null,
+      lastError: null,
+      lastStopReason: null,
+      batchCount: 0,
+      scannedVisibleCount: 0,
+      registryCount: state.messageRegistry ? state.messageRegistry.size : 0,
+      direction: "up",
+      hydrationAuditBefore: beforeAudit,
+      backfillCurrentEngine: KNOWN_GAP_PROBE_STRATEGY,
+      backfillCurrentMode: "backfill-current",
+      backfillCurrentDriveInvoked: true,
+      backfillCurrentDriveStatus: "running",
+      legacyBackfillUsed: false,
+      legacyBackfillAvailable: true,
+      legacyBackfillReason: "legacy-debug-only",
+      backfillRegistryCountBefore: beforeAudit.registryCount,
+      backfillVisibleDomCountBefore: beforeAudit.visibleDomUserMessageCount,
+      backfillFirstRegistryBefore: beforeAudit.firstRegistryMessageId,
+      backfillFirstVisibleDomBefore: beforeAudit.firstVisibleDomMessageId,
+      backfillRetainedOffscreenCount: DEBUG_STATE.registryRetainedOffscreenCount,
+      backfillRegistrySaveAttempted: false,
+      backfillRegistrySaveCompleted: false,
+      backfillReturnPositionCaptured: !!returnPosition.captured,
+      backfillReturnPositionAttempted: false,
+      backfillReturnPositionSucceeded: false,
+      backfillReturnPositionSkippedReason: returnPosition.captured ? null : returnPosition.reason,
+      backfillReturnPositionDescriptor: returnPosition.descriptor || null,
+      backfillReturnPositionScrollTopBefore: returnPosition.scrollTop,
+      backfillReturnPositionWindowYBefore: returnPosition.windowScrollY
+    });
+    setKnownGapProbePatch({
+      knownGapProbeStatus: "running",
+      knownGapProbeRunId: runId,
+      knownGapProbeIsRunning: true,
+      knownGapProbeCanCopyFinalDebug: false,
+      knownGapProbeAttempted: true,
+      knownGapProbeCount: 0,
+      knownGapProbeMax: KNOWN_GAP_NATIVE_PROBE_MAX,
+      knownGapProbeReason: null,
+      knownGapProbeStrategy: KNOWN_GAP_PROBE_STRATEGY,
+      knownGapProbeHydrationDetected: false,
+      knownGapProbeVisualOnly: false,
+      knownGapProbeSafetyStopped: false,
+      knownGapProbeBefore: beforeAudit,
+      knownGapProbeAfter: null,
+      knownGapProbeKnownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      knownGapProbeFirstVisibleIndexBefore: beforeAudit.firstVisibleDomRegistryIndex,
+      knownGapProbeFirstRegistryBefore: beforeAudit.firstRegistryMessageId,
+      knownGapProbeRegistryCountBefore: beforeAudit.registryCount,
+      knownGapProbeVisibleDomCountBefore: beforeAudit.visibleDomUserMessageCount,
+      knownGapProbeStartUrl: startSnapshot.url,
+      knownGapProbeEndUrl: null,
+      knownGapProbeStartConversationId: startSnapshot.conversationId,
+      knownGapProbeEndConversationId: null,
+      knownGapProbeStartConversationKey: startSnapshot.conversationKey,
+      knownGapProbeEndConversationKey: null,
+      knownGapProbeStartUserMessageCount: startSnapshot.userMessageCount,
+      knownGapProbeCancelledByConversationChange: false,
+      knownGapProbeCancelReason: null
+    });
+    appendBackfillTraceEvent("backfill-current-drive-start", "start", {
+      beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+      knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      registryCountBefore: beforeAudit.registryCount,
+      result: "running",
+      reason: KNOWN_GAP_PROBE_STRATEGY
+    });
+    setupBackfillUserInterruptGuard(runId);
+
+    runCurrentConversationBackfillDrive(runId, conversationId, beforeAudit, returnPosition).catch((error) => {
+      if (state.backfill && state.backfill.runId === runId) {
+        setBackfillStatus("failed", {
+          finishedAt: new Date().toISOString(),
+          lastError: error && error.message ? error.message : "backfill-current-drive-error",
+          lastStopReason: error && error.message ? error.message : "backfill-current-drive-error",
+          backfillCurrentDriveStatus: "failed",
+          backfillCurrentDriveReason: error && error.message ? error.message : "backfill-current-drive-error"
+        });
+      }
+    });
+
+    return state.backfill;
+  }
+
+  async function runCurrentConversationBackfillDrive(runId, conversationId, beforeAudit, returnPosition) {
+    await runContinuousUpwardHydrationDrive({
+      mode: "backfill-current",
+      runId,
+      conversationId,
+      initialAudit: beforeAudit,
+      attemptHistory: []
+    });
+    if (!state.backfill || state.backfill.runId !== runId) return;
+
+    const probeStatus = state.backfill.knownGapProbeStatus;
+    const probeReason = state.backfill.knownGapProbeReason;
+    const wasCancelled = state.backfill.cancelRequested || probeStatus === "cancelled";
+    if (state.backfill.knownGapProbeCancelledByConversationChange) {
+      const afterAudit = state.backfill.knownGapProbeAfter || beforeAudit;
+      setBackfillStatus("cancelled", {
+        finishedAt: new Date().toISOString(),
+        lastError: probeReason || "conversation-changed-during-known-gap-probe",
+        lastStopReason: probeReason || "conversation-changed-during-known-gap-probe",
+        hydrationAuditAfter: afterAudit,
+        backfillCurrentEngine: KNOWN_GAP_PROBE_STRATEGY,
+        backfillCurrentMode: "backfill-current",
+        backfillCurrentDriveInvoked: true,
+        backfillCurrentDriveStatus: probeStatus,
+        backfillCurrentDriveReason: probeReason || "conversation-changed-during-known-gap-probe",
+        legacyBackfillUsed: false,
+        backfillRegistryCountAfter: afterAudit.registryCount,
+        backfillVisibleDomCountAfter: afterAudit.visibleDomUserMessageCount,
+        backfillFirstRegistryAfter: afterAudit.firstRegistryMessageId,
+        backfillFirstVisibleDomAfter: afterAudit.firstVisibleDomMessageId,
+        backfillRegistrySaveAttempted: false,
+        backfillRegistrySaveCompleted: false,
+        backfillReturnPositionAttempted: false,
+        backfillReturnPositionSucceeded: false,
+        backfillReturnPositionSkippedReason: "conversation-changed"
+      });
+      appendBackfillTraceEvent("backfill-current-drive-finish", "finish", {
+        beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+        afterIndex: afterAudit.firstVisibleDomRegistryIndex,
+        knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+        knownGapAfter: afterAudit.knownTopGapFromFirstVisible,
+        registryCountBefore: beforeAudit.registryCount,
+        registryCountAfter: afterAudit.registryCount,
+        result: "cancelled",
+        reason: "conversation-changed-during-known-gap-probe"
+      });
+      return;
+    }
+    const finalMetrics = scanMergeSaveBackfillBatch("manual-backfill-current-final");
+    const afterAudit = getBackfillHydrationAuditSnapshot("backfill-current-after");
+    const returnResult = restoreBackfillReturnPosition(returnPosition);
+    const terminalStatus = wasCancelled ? "cancelled" : probeStatus === "success" ? "completed" : "failed";
+    const terminalReason = wasCancelled ? (state.backfill.lastError || probeReason || "cancelled") :
+      probeStatus === "success" ? "stable-true-top-confirmed" : (probeReason || "backfill-current-drive-failed");
+
+    setBackfillStatus(terminalStatus, {
+      finishedAt: new Date().toISOString(),
+      lastError: terminalStatus === "completed" ? null : terminalReason,
+      lastStopReason: terminalReason,
+      batchCount: Number(state.backfill.batchCount || 0) + 1,
+      scannedVisibleCount: Number(state.backfill.scannedVisibleCount || 0) + Number(finalMetrics.visibleCount || 0),
+      registryCount: finalMetrics.registryCount,
+      hydrationAuditAfter: afterAudit,
+      backfillCurrentEngine: KNOWN_GAP_PROBE_STRATEGY,
+      backfillCurrentMode: "backfill-current",
+      backfillCurrentDriveInvoked: true,
+      backfillCurrentDriveStatus: probeStatus,
+      backfillCurrentDriveReason: probeReason || terminalReason,
+      legacyBackfillUsed: false,
+      legacyBackfillAvailable: true,
+      backfillRegistryCountAfter: afterAudit.registryCount,
+      backfillVisibleDomCountAfter: afterAudit.visibleDomUserMessageCount,
+      backfillFirstRegistryAfter: afterAudit.firstRegistryMessageId,
+      backfillFirstVisibleDomAfter: afterAudit.firstVisibleDomMessageId,
+      backfillRetainedOffscreenCount: DEBUG_STATE.registryRetainedOffscreenCount,
+      backfillRegistrySaveAttempted: true,
+      backfillRegistrySaveCompleted: Number(DEBUG_STATE.registrySavedCount || 0) === Number(finalMetrics.registryCount || 0),
+      backfillReturnPositionAttempted: !!returnResult.attempted,
+      backfillReturnPositionSucceeded: !!returnResult.succeeded,
+      backfillReturnPositionSkippedReason: returnResult.succeeded ? null : returnResult.reason,
+      backfillReturnPositionScrollTopAfter: returnResult.after ? returnResult.after.scrollTop : null,
+      backfillReturnPositionWindowYAfter: returnResult.after ? returnResult.after.windowScrollY : null,
+      completionConfidence: terminalStatus === "completed" ? "stable-true-top" : null
+    });
+    appendBackfillTraceEvent("backfill-current-drive-finish", "finish", {
+      beforeIndex: beforeAudit.firstVisibleDomRegistryIndex,
+      afterIndex: afterAudit.firstVisibleDomRegistryIndex,
+      knownGapBefore: beforeAudit.knownTopGapFromFirstVisible,
+      knownGapAfter: afterAudit.knownTopGapFromFirstVisible,
+      registryCountBefore: beforeAudit.registryCount,
+      registryCountAfter: afterAudit.registryCount,
+      result: terminalStatus,
+      reason: terminalReason
+    });
+  }
+
+  function startLegacyCurrentConversationBackfill() {
+    const status = state.backfill && state.backfill.status;
+    if (status === "running" || status === "cancelling") return state.backfill;
+    if (state.backfill && state.backfill.knownGapProbeStatus === "running") {
+      setKnownGapProbePatch({
+        knownGapProbeReason: "known-gap-probe-already-running"
+      });
+      return state.backfill;
+    }
+
     const conversationId = getConversationId() || state.currentConversationId;
     const runId = "backfill-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
 
-    resetBackfillState("start-current-conversation-backfill");
+    resetBackfillState("start-legacy-current-conversation-backfill");
     const hydrationAuditBefore = getBackfillHydrationAuditSnapshot("before");
     setBackfillStatus("running", {
       runId,
@@ -4459,6 +4798,12 @@
       direction: "up",
       hydrationAuditBefore
     });
+    setBackfillStatus("running", {
+      legacyBackfillUsed: true,
+      legacyBackfillReason: "legacy-debug-only",
+      backfillCurrentEngine: "legacy-safe-anchor",
+      backfillCurrentMode: "legacy-debug"
+    });
     appendBackfillTraceEvent("hydration-audit-before", "capture", {
       beforeIndex: hydrationAuditBefore.firstVisibleDomRegistryIndex,
       result: "captured",
@@ -4466,11 +4811,11 @@
     });
     appendBackfillTraceEvent("run-start", "start", {
       result: "running",
-      reason: "manual-debug"
+      reason: "legacy-debug"
     });
     setupBackfillUserInterruptGuard(runId);
 
-    runCurrentConversationBackfillLoop(runId, conversationId).catch((error) => {
+    runLegacyCurrentConversationBackfillLoop(runId, conversationId).catch((error) => {
       if (state.backfill && state.backfill.runId === runId) {
         setBackfillStatus("failed", {
           finishedAt: new Date().toISOString(),
@@ -4482,7 +4827,7 @@
     return state.backfill;
   }
 
-  async function runCurrentConversationBackfillLoop(runId, conversationId) {
+  async function runLegacyCurrentConversationBackfillLoop(runId, conversationId) {
     const maxBatchCount = 250;
     const maxDurationMs = 90000;
     const noProgressRoundLimit = 6;
@@ -12434,6 +12779,17 @@
       startCurrentConversationBackfill();
     });
 
+    const legacyBackfill = document.createElement("button");
+    legacyBackfill.type = "button";
+    legacyBackfill.className = "gpn-mini-btn";
+    legacyBackfill.textContent = "Legacy Backfill Debug";
+    legacyBackfill.disabled = backfillRunning || knownGapProbeRunning;
+    legacyBackfill.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      startLegacyCurrentConversationBackfill();
+    });
+
     const cancelBackfill = document.createElement("button");
     cancelBackfill.type = "button";
     cancelBackfill.className = "gpn-mini-btn";
@@ -12459,6 +12815,7 @@
     actions.appendChild(copy);
     actions.appendChild(print);
     actions.appendChild(backfill);
+    actions.appendChild(legacyBackfill);
     actions.appendChild(cancelBackfill);
     actions.appendChild(knownGapProbe);
 

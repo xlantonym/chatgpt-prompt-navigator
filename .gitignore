@@ -21,3 +21,4 @@ dist/*.map
 # Local audit / development notes
 docs/DEVELOPMENT_REVIEW.md
 docs/FINAL_AUDIT.md
+docs/chatgpt_prompt_navigator_backfill_reveal_jump_roadmap.md
